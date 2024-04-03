@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "85759773266",
+    "project_id": "waterup-93661",
+    "storage_bucket": "waterup-93661.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:85759773266:android:bc22b4a22854d9ef78ad8b",
+        "android_client_info": {
+          "package_name": "com.example.waterup"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGvNYOxxeYmwVbJA0M8bunbHGd3jn4Gvg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
