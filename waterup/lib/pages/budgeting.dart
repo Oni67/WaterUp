@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:waterup/data/fake_data.dart';
 import 'package:waterup/backend/orçamentos.dart';
+import 'package:waterup/pages/start.dart';
+
 
 class BudgetingPage extends StatelessWidget {
   const BudgetingPage({Key? key});
@@ -38,9 +40,6 @@ class BudgetingState extends State<Budgeting> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Orçamentos'),
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Provide default data or an empty map
@@ -119,70 +118,115 @@ class _ListBuilderState extends State<ListBuilder> {
       names.add(document['Nome']);
     }
 
-    return ListView.builder(
-      itemCount: entries.length,
-      itemBuilder: (_, int index) {
-        return Column(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(30.0),
-              ),
-              child: ListTile(
-                onTap: () => _toggle(index),
-                title: Text(names[index]),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        // ignore: avoid_print
-                        print("Do action to remove budget from database");
-                        deleteBudget(entries[index].id);
-                        _loadData();
-                      },
-                      icon: const Icon(Icons.delete_forever),
-                      label: const Text("Delete"),
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                            Colors.red.shade400),
-                        foregroundColor:
-                            MaterialStateProperty.all<Color>(Colors.white),
-                      ),
-                    ),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        // Navigate to BudgetScreen with the selected budget data
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BudgetScreen(
-                              budgetData: entries[index].data() as Map<String,
-                                  dynamic>,
-                                  control: true,
-                                  controlDocId: entries[index].id, // Pass the budget data to BudgetScreen
-                            ),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.edit),
-                      label: const Text("Edit"),
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                            Colors.green.shade400),
-                        foregroundColor:
-                            MaterialStateProperty.all<Color>(Colors.white),
-                      ),
-                    ),
-                  ],
+    return Scaffold(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            color: Colors.blue, // Set the color of the banner to blue
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.logout,
+                      color: Colors.white), // Icon color set to white
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyHomePage()),
+                    );
+                  },
                 ),
-              ),
+                const Text(
+                  'WaterUp',
+                  style: TextStyle(
+                    color: Colors.white, // Set the text color to white
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0,
+                  ),
+                ),
+                const SizedBox( width: 40), // Adjust the space between the icon and text as needed
+              ],
             ),
-            SizedBox(height: 10),
-          ],
-        );
-      },
+          ),
+          Expanded(
+            // Use Expanded to allow ListView.builder to occupy remaining space
+            child: ListView.builder(
+              itemCount: entries.length,
+              itemBuilder: (_, int index) {
+                return Column(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      child: ListTile(
+                        onTap: () => _toggle(index),
+                        title: Text(names[index]),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                // ignore: avoid_print
+                                print(
+                                    "Do action to remove budget from database");
+                                deleteBudget(entries[index].id);
+                                _loadData();
+                              },
+                              icon: const Icon(Icons.delete_forever),
+                              label: const Text("Delete"),
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.red.shade400),
+                                foregroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.white),
+                              ),
+                            ),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                // Navigate to BudgetScreen with the selected budget data
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => BudgetScreen(
+                                      budgetData: entries[index].data()
+                                          as Map<String, dynamic>,
+                                      control: true,
+                                      controlDocId: entries[index]
+                                          .id, // Pass the budget data to BudgetScreen
+                                    ),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(Icons.edit),
+                              label: const Text("Edit"),
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.green.shade400),
+                                foregroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
