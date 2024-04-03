@@ -5,11 +5,7 @@ import 'dart:math';
 class PieGraph extends StatelessWidget {
   final List<double> data;
   final List<Color> predefinedColors = [
-    Color.fromARGB(255, 1, 63, 114),
-    Color.fromARGB(255, 2, 117, 6),
-    Color.fromARGB(255, 172, 21, 1),
-    Color.fromARGB(255, 85, 1, 163),
-    Color.fromARGB(255, 241, 157, 1),
+    const Color.fromARGB(255, 2, 132, 238),
   ];
 
   final Color lastElementColor = Color.fromARGB(255, 128, 127, 119); // Set the color for the last element

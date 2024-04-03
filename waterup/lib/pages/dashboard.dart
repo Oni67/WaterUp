@@ -1,4 +1,3 @@
-import 'package:waterup/components/dropdown_list.dart';
 import 'package:waterup/components/pie_graph.dart';
 import 'package:flutter/material.dart';
 import 'package:waterup/pages/start.dart';
@@ -25,26 +24,44 @@ class Graph extends StatefulWidget {
 class GraphComponent extends State<Graph> {
   late String selectedOption = '';
   List<String> listContents = [];
-  List<double> percentages = [100];
+  List<double> percentages = [65, 35];
   Map<String, int> temp = {};
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.logout),
-          onPressed: () {
-            Navigator.of(context).pop();
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => MyHomePage()),
-            );
-          },
-        ),
-      ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Container(
+            color: Colors.blue, // Set the color of the banner to blue
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.logout,
+                      color: Colors.white), // Icon color set to white
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyHomePage()),
+                    );
+                  },
+                ),
+                const Text(
+                  'WaterUp',
+                  style: TextStyle(
+                    color: Colors.white, // Set the text color to white
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0,
+                  ),
+                ),
+                const SizedBox(width:40), // Adjust the space between the icon and text as needed
+              ],
+            ),
+          ),
           const Center(
             child: Padding(
               padding: EdgeInsets.all(20.0),
@@ -79,22 +96,50 @@ class GraphComponent extends State<Graph> {
               } else {
                 return Column(
                   children: [
-                    DropdowButtonComponent(
-                      snapshot.data ?? [],
-                      onChanged: (value) {
-                        setState(() {
-                          selectedOption = value!;
-                        });
-                        getPercentage(selectedOption);
-                        loadTransactions(selectedOption);
-                      },
-                    ),
-                    Text("$selectedOption", style: TextStyle(fontSize: 24)),
                     PieGraph(percentages),
                   ],
                 );
               }
             },
+          ),
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Text(
+                'Daily Goal',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+                ),
+              ),
+            ),
+          ),
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Text(
+                '1.3/2 L',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+                ),
+              ),
+            ),
+          ),
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Text(
+                'You’re almost at your daily goal! Keep it up!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+                ),
+              ),
+            ),
           ),
           Expanded(
             child: FutureBuilder(

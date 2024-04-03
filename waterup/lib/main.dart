@@ -39,7 +39,7 @@ class _NavigationExampleState extends State<NavigationExample> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: const Color.fromARGB(255, 25, 101, 124),
+        selectedItemColor: const Color.fromARGB(255, 46, 162, 197),
         unselectedItemColor: const Color.fromARGB(255, 98, 132, 143),
         currentIndex: currentPageIndex,
         onTap: (int index) {
