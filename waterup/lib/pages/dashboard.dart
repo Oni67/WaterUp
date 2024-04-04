@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:waterup/components/pie_graph.dart';
 import 'package:flutter/material.dart';
 import 'package:waterup/pages/start.dart';
@@ -31,7 +32,8 @@ class GraphComponent extends State<Graph> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(236, 201, 198, 198),
-      body: Column(
+      body: SingleChildScrollView(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
@@ -142,7 +144,7 @@ class GraphComponent extends State<Graph> {
               ),
             ),
           ),
-          Expanded(
+          SizedBox(
             child: FutureBuilder(
               future: Future.value(null),
               builder: (context, AsyncSnapshot<void> snapshot) {
@@ -177,7 +179,7 @@ class GraphComponent extends State<Graph> {
           ),
         ],
       ),
-    );
+    ));
   }
 
   Future<void> getPercentage(String id) async {

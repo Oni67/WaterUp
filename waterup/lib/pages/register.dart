@@ -31,7 +31,8 @@ class ThisRegister extends State<Registering> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(236, 201, 198, 198),
-      body: Center(
+      body: SingleChildScrollView(
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -135,6 +136,6 @@ class ThisRegister extends State<Registering> {
           ],
         ),
       ),
-    );
+    ));
   }
 }
