@@ -79,6 +79,7 @@ class BudgetingState extends State<HowTo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(236, 201, 198, 198),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight + 30),
         child: Container(
@@ -111,7 +112,8 @@ class BudgetingState extends State<HowTo> {
             ),
           ),
       ),
-      body: ListView.builder(
+      body:
+      ListView.builder(
         itemCount: 20,
         itemBuilder: (context, index) {
           return Column(
@@ -124,7 +126,7 @@ class BudgetingState extends State<HowTo> {
                     foregroundColor:
                         MaterialStateProperty.all<Color>(Colors.white),
                     backgroundColor: MaterialStateProperty.all<Color>(
-                        const Color.fromARGB(255, 17, 72, 88)),
+                        Color.fromARGB(255, 25, 164, 206)),
                   ),
                   onPressed: () {
                     setState(() {

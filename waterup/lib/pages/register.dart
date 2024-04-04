@@ -30,6 +30,7 @@ class ThisRegister extends State<Registering> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(236, 201, 198, 198),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

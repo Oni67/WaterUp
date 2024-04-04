@@ -30,6 +30,7 @@ class GraphComponent extends State<Graph> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(236, 201, 198, 198),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

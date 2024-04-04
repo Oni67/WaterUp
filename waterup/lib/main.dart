@@ -38,6 +38,7 @@ class _NavigationExampleState extends State<NavigationExample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(236, 201, 198, 198),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: const Color.fromARGB(255, 46, 162, 197),
         unselectedItemColor: const Color.fromARGB(255, 98, 132, 143),

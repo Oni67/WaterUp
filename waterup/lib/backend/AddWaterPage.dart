@@ -351,6 +351,7 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(236, 201, 198, 198),
       appBar: AppBar(
         title: const Text('Add Water'), // Add const to Text widget
       ),

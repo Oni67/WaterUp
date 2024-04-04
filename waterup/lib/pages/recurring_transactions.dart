@@ -39,31 +39,6 @@ class recurring_TransactionsState extends State<recurring_Transactions> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Provide default data or an empty map
-          Map<String, dynamic> defaultData = {
-            'Valor': '',
-            'Descrição': '',
-            'regularidade': '',
-            'tipo': '',
-          };
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => TransacoesRecorrentesScreen(
-                recurrentTransactionData: defaultData,
-                control: false,
-                controlDocId: '',
-                budgets: [],
-              ),
-            ),
-          );
-        },
-        backgroundColor: Colors.lightBlue.shade200,
-        elevation: 2.0,
-        child: const Icon(Icons.add, size: 35, color: Colors.white),
-      ),
       body: ListBuilder(
         selectedList: _selected,
         onSelectionChange: (bool x) {
@@ -119,6 +94,7 @@ class _ListBuilderState extends State<ListBuilder> {
     }
 
     return Scaffold(
+      backgroundColor: Color.fromARGB(236, 201, 198, 198),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

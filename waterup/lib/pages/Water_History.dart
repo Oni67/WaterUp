@@ -39,6 +39,7 @@ class WaterHistoryState extends State<WaterHistory> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(236, 201, 198, 198),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Provide default data or an empty map
@@ -119,6 +120,7 @@ class _ListBuilderState extends State<ListBuilder> {
     }
 
     return Scaffold(
+      backgroundColor: Color.fromARGB(236, 201, 198, 198),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
