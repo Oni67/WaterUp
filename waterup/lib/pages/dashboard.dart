@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:waterup/components/pie_graph.dart';
 import 'package:flutter/material.dart';
@@ -32,14 +33,12 @@ class GraphComponent extends State<Graph> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(236, 201, 198, 198),
-      body: SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            color: Colors.blue, // Set the color of the banner to blue
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight + 30),
+        child: Container(
+          color: Colors.blue, // Set the color of the banner to blue
             padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Row(
+          child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
@@ -64,7 +63,11 @@ class GraphComponent extends State<Graph> {
                 const SizedBox(width:40), // Adjust the space between the icon and text as needed
               ],
             ),
-          ),
+        )),
+      body: SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
           const Center(
             child: Padding(
               padding: EdgeInsets.all(20.0),
