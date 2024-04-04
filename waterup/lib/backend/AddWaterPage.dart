@@ -127,7 +127,7 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
       String transactionCategory = category.isEmpty ? 'No category' : category;
       // Create a reference to the category
       //await transactions.collection('category').doc(transactionCategory).collection('docs').add({'Data da transação': checkDate(date), 'Descrição': description, 'Valor monetário': value});
-      await transactions.collection('category').doc().set({
+      await transactions.collection(date).doc().set({
         'Data da transação': checkDate(date),
         'Descrição': description,
         'Valor monetário': value,

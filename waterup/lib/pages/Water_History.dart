@@ -115,7 +115,7 @@ class _ListBuilderState extends State<ListBuilder> {
   @override
   Widget build(BuildContext context) {
     for (DocumentSnapshot document in entries) {
-      names.add(document['Valor monetário']);
+      names.add(document['Data da transação']);
     }
 
     return Scaffold(
