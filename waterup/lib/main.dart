@@ -69,7 +69,7 @@ class _NavigationExampleState extends State<NavigationExample> {
         const Dashboard(),
         const TransactionsPage(),
         const RecurrentTransactionsPage(),
-        const BudgetingPage(),
+        const HowToPage(),
       ][currentPageIndex],
     );
   }

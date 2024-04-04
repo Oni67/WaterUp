@@ -1,188 +1,192 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:waterup/data/fake_data.dart';
-import 'package:waterup/backend/orçamentos.dart';
 
-class BudgetingPage extends StatelessWidget {
-  const BudgetingPage({Key? key});
+class HowToPage extends StatelessWidget {
+  const HowToPage({Key? key});
 
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: Budgeting(),
+      home: HowTo(),
     );
   }
 }
 
-class Budgeting extends StatefulWidget {
-  const Budgeting({Key? key});
+class HowTo extends StatefulWidget {
+  const HowTo({Key? key});
 
   @override
   BudgetingState createState() => BudgetingState();
 }
 
-class BudgetingState extends State<Budgeting> {
-  late List<bool> _selected;
-  final int listLength = BudgetList().budgetList.length;
+class BudgetingState extends State<HowTo> {
+  final List<bool> _showExplanationList = List.generate(20, (index) => false);
+
+  // Button texts for each index
+  List<String> buttonTexts = [
+    'The first how to goes here',
+    'Button 2',
+    'Button 3',
+    'Button 4',
+    'Button 5',
+    'Button 6',
+    'Button 7',
+    'Button 8',
+    'Button 9',
+    'Button 10',
+    'Button 11',
+    'Button 12',
+    'Button 13',
+    'Button 14',
+    'Button 15',
+    'Button 16',
+    'Button 17',
+    'Button 18',
+    'Button 19',
+    'Button 20',
+  ];
+
+  // Messages for each index
+  List<String> messages = [
+    'The explanation of it goes here',
+    'Message 2',
+    'Message 3',
+    'Message 4',
+    'Message 5',
+    'Message 6',
+    'Message 7',
+    'Message 8',
+    'Message 9',
+    'Message 10',
+    'Message 11',
+    'Message 12',
+    'Message 13',
+    'Message 14',
+    'Message 15',
+    'Message 16',
+    'Message 17',
+    'Message 18',
+    'Message 19',
+    'Message 20',
+  ];
 
   @override
   void initState() {
     super.initState();
-    initializeSelection();
-  }
-
-  void initializeSelection() {
-    _selected = List<bool>.generate(listLength, (_) => false);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Orçamentos'),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Provide default data or an empty map
-          Map<String, dynamic> defaultData = {
-            'Data Limite': '',
-            'Percentagem Limite': '',
-            'Orçamento Máximo': '',
-            'Nome': '',
-          };
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => BudgetScreen(
-                budgetData: defaultData,
-                control: false,
-                controlDocId: '',
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight + 30),
+        child: AppBar(
+          title: const Text(
+            'How To:',
+            style: TextStyle(fontSize: 48),
+          ),
+          titleTextStyle: const TextStyle(
+            fontSize: 48, // Set the font size to maintain the larger size
+            fontWeight: FontWeight.bold, // Optional: make the text bold
+            letterSpacing: 2.0, // Optional: adjust letter spacing
+            fontStyle: FontStyle.italic, // Optional: adjust font style
+            color: Colors.black, // Optional: set custom text color
+            shadows: [
+              Shadow(
+                color: Colors.grey,
+                offset: Offset(
+                    2, 2), // Move the shadow slightly to the right and down
+                blurRadius: 3,
               ),
-            ),
-          );
-        },
-        backgroundColor: Colors.lightBlue.shade200,
-        elevation: 2.0,
-        child: const Icon(Icons.add, size: 35, color: Colors.white),
+            ],
+          ),
+        ),
       ),
-      body: ListBuilder(
-        selectedList: _selected,
-        onSelectionChange: (bool x) {
-          setState(() {});
+      body: ListView.builder(
+        itemCount: 20,
+        itemBuilder: (context, index) {
+          return Column(
+            children: [
+              SizedBox(
+                width: 500, // Same width as the buttons
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        const Color.fromARGB(255, 17, 72, 88)),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _showExplanationList[index] =
+                          !_showExplanationList[index];
+                      for (int i = 0; i < _showExplanationList.length; i++) {
+                        if (i != index) {
+                          _showExplanationList[i] = false;
+                        }
+                      }
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.arrow_downward),
+                        const SizedBox(width: 2),
+                        Text(buttonTexts[index]),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              if (_showExplanationList[index])
+                ExplanationDialog(
+                  message: messages[index],
+                  onClose: () =>
+                      setState(() => _showExplanationList[index] = false),
+                ),
+              const SizedBox(height: 15), // Add space between buttons
+            ],
+          );
         },
       ),
     );
   }
 }
 
-class ListBuilder extends StatefulWidget {
-  const ListBuilder({
-    Key? key,
-    required this.selectedList,
-    required this.onSelectionChange,
-  }) : super(key: key);
+class ExplanationDialog extends StatelessWidget {
+  final String message;
+  final Function onClose;
 
-  final List<bool> selectedList;
-  final ValueChanged<bool>? onSelectionChange;
-
-  @override
-  State<ListBuilder> createState() => _ListBuilderState();
-}
-
-class _ListBuilderState extends State<ListBuilder> {
-  List<DocumentSnapshot> entries = [];
-  List<String> names = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
-
-  Future<void> _loadData() async {
-    List<DocumentSnapshot> fetchedData = await getList();
-    setState(() {
-      entries = fetchedData;
-    });
-  }
-
-  void _toggle(int index) {
-    setState(() {
-      widget.selectedList[index] = !widget.selectedList[index];
-      widget.onSelectionChange!(true);
-    });
-  }
+  const ExplanationDialog(
+      {super.key, required this.message, required this.onClose});
 
   @override
   Widget build(BuildContext context) {
-    for (DocumentSnapshot document in entries) {
-      names.add(document['Nome']);
-    }
-
-    return ListView.builder(
-      itemCount: entries.length,
-      itemBuilder: (_, int index) {
-        return Column(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(30.0),
+    return Dialog(
+      // ignore: deprecated_member_use
+      child: WillPopScope(
+        onWillPop: () async {
+          onClose(); // Call onClose function when back button is pressed
+          return true;
+        },
+        child: Container(
+          width: 500, // Same width as the buttons
+          color: Colors.grey[200],
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                message,
+                style: const TextStyle(fontSize: 16),
               ),
-              child: ListTile(
-                onTap: () => _toggle(index),
-                title: Text(names[index]),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        // ignore: avoid_print
-                        print("Do action to remove budget from database");
-                        deleteBudget(entries[index].id);
-                        _loadData();
-                      },
-                      icon: const Icon(Icons.delete_forever),
-                      label: const Text("Delete"),
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                            Colors.red.shade400),
-                        foregroundColor:
-                            MaterialStateProperty.all<Color>(Colors.white),
-                      ),
-                    ),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        // Navigate to BudgetScreen with the selected budget data
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BudgetScreen(
-                              budgetData: entries[index].data() as Map<String,
-                                  dynamic>,
-                                  control: true,
-                                  controlDocId: entries[index].id, // Pass the budget data to BudgetScreen
-                            ),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.edit),
-                      label: const Text("Edit"),
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                            Colors.green.shade400),
-                        foregroundColor:
-                            MaterialStateProperty.all<Color>(Colors.white),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 10),
-          ],
-        );
-      },
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
