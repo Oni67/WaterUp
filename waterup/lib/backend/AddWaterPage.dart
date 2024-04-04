@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable, avoid_print, unused_local_variable
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -5,12 +7,12 @@ import 'package:flutter/material.dart';
 import 'checks.dart';
 import 'package:intl/intl.dart';
 
-Future<List<DocumentSnapshot>> getTransactionsList() async {
+Future<List<DocumentSnapshot>> getWaterHistoryList() async {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   try {
     CollectionReference document = firestore
-        .collection('transactions')
+        .collection('WaterHistory')
         .doc(FirebaseAuth.instance.currentUser?.email)
         .collection('category');
 
@@ -35,7 +37,7 @@ Future<void> deleteTransaction(String documentId) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     DocumentReference document = firestore
-        .collection('transactions')
+        .collection('WaterHistory')
         .doc(FirebaseAuth.instance.currentUser?.email);
 
     // Delete the document
@@ -47,12 +49,12 @@ Future<void> deleteTransaction(String documentId) async {
   }
 }
 
-class TransacoesScreen extends StatefulWidget {
+class AddWaterScreen extends StatefulWidget {
   final Map<String, dynamic>? transactionData;
   final bool control;
   final String controlDocId;
   List<String> budgets;
-  TransacoesScreen(
+  AddWaterScreen(
       {Key? key,
       this.transactionData,
       required this.control,
@@ -62,10 +64,10 @@ class TransacoesScreen extends StatefulWidget {
 
   @override
   // ignore: library_private_types_in_public_api
-  _TrasactionScreenState createState() => _TrasactionScreenState();
+  _AddWaterScreenState createState() => _AddWaterScreenState();
 }
 
-class _TrasactionScreenState extends State<TransacoesScreen> {
+class _AddWaterScreenState extends State<AddWaterScreen> {
   String errorDateMessage = '';
   String errorDescriptionMessage = '';
   String errorValueMessage = '';
@@ -119,7 +121,7 @@ class _TrasactionScreenState extends State<TransacoesScreen> {
 
       // Create a new collection and add a document
       DocumentReference transactions = firestore
-          .collection('transactions')
+          .collection('WaterHistory')
           .doc(FirebaseAuth.instance.currentUser?.email);
       // Determine the category based on user input
       String transactionCategory = category.isEmpty ? 'No category' : category;
@@ -178,7 +180,7 @@ class _TrasactionScreenState extends State<TransacoesScreen> {
 
       // Create a new collection and add a document
       DocumentReference transactions = firestore
-          .collection('transactions')
+          .collection('WaterHistory')
           .doc(FirebaseAuth.instance.currentUser?.email);
       // Determine the category based on user input
       String transactionCategory = category.isEmpty ? 'No category' : category;
@@ -350,7 +352,7 @@ class _TrasactionScreenState extends State<TransacoesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Registo de Transações'), // Add const to Text widget
+        title: const Text('Add Water'), // Add const to Text widget
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

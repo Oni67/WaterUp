@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:waterup/pages/budgeting.dart';
-import 'package:waterup/pages/watch_transations.dart';
+import 'package:waterup/pages/Water_History.dart';
 import 'package:waterup/pages/recurring_transactions.dart';
 import 'package:waterup/pages/start.dart';
 import 'package:waterup/pages/dashboard.dart';
@@ -67,9 +67,9 @@ class _NavigationExampleState extends State<NavigationExample> {
       ),
       body: [
         const Dashboard(),
-        const TransactionsPage(),
-        const RecurrentTransactionsPage(),
-        const BudgetingPage(),
+        const WaterHistoryPage(), //Add Water
+        const RecurrentTransactionsPage(), // Achievements
+        const BudgetingPage(), //How to
       ][currentPageIndex],
     );
   }

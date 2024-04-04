@@ -1,28 +1,28 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:waterup/data/fake_data.dart';
-import 'package:waterup/backend/transacoes.dart';
+import 'package:waterup/backend/AddWaterPage.dart';
 import 'package:waterup/pages/start.dart';
 
-class TransactionsPage extends StatelessWidget {
-  const TransactionsPage({Key? key});
+class WaterHistoryPage extends StatelessWidget {
+  const WaterHistoryPage({Key? key});
 
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: Transactions(),
+      home: WaterHistory(),
     );
   }
 }
 
-class Transactions extends StatefulWidget {
-  const Transactions({Key? key});
+class WaterHistory extends StatefulWidget {
+  const WaterHistory({Key? key});
 
   @override
-  transactionsState createState() => transactionsState();
+  WaterHistoryState createState() => WaterHistoryState();
 }
 
-class transactionsState extends State<Transactions> {
+class WaterHistoryState extends State<WaterHistory> {
   late List<bool> _selected;
   final int listLength = BudgetList().budgetList.length;
 
@@ -51,7 +51,7 @@ class transactionsState extends State<Transactions> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => TransacoesScreen(
+              builder: (context) => AddWaterScreen(
                 transactionData: defaultData,
                 control: false,
                 controlDocId: '',
@@ -99,7 +99,7 @@ class _ListBuilderState extends State<ListBuilder> {
   }
 
   Future<void> _loadData() async {
-    List<DocumentSnapshot> fetchedData = await getTransactionsList();
+    List<DocumentSnapshot> fetchedData = await getWaterHistoryList();
     setState(() {
       entries = fetchedData;
     });
@@ -115,7 +115,7 @@ class _ListBuilderState extends State<ListBuilder> {
   @override
   Widget build(BuildContext context) {
     for (DocumentSnapshot document in entries) {
-      names.add(document['Descrição']);
+      names.add(document['Valor monetário']);
     }
 
     return Scaffold(
@@ -170,9 +170,6 @@ class _ListBuilderState extends State<ListBuilder> {
                           children: [
                             ElevatedButton.icon(
                               onPressed: () {
-                                // ignore: avoid_print
-                                print(
-                                    "Do action to remove recurrent transaction from database");
                                 deleteTransaction(entries[index].id);
                                 _loadData();
                               },
@@ -193,7 +190,7 @@ class _ListBuilderState extends State<ListBuilder> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => TransacoesScreen(
+                                    builder: (context) => AddWaterScreen(
                                       transactionData: entries[index].data()
                                           as Map<String, dynamic>,
                                       control: true,
