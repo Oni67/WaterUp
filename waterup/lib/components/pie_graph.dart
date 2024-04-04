@@ -37,7 +37,7 @@ class PieGraph extends StatelessWidget {
                 color: getColorForIndex(entry.key),
                 value: entry.value,
                 title: '${entry.value}%', // Convert the double value to a string
-                radius: 80,
+                radius: 60,
                 titleStyle: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
