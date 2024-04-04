@@ -44,10 +44,8 @@ class WaterHistoryState extends State<WaterHistory> {
         onPressed: () {
           // Provide default data or an empty map
           Map<String, dynamic> defaultData = {
-            'Data da transação': '',
-            'Descrição': '',
-            'Valor monetário': '',
-            'tipo': '',
+            'Data do registo': '',
+            'Quantidade de Ã¡gua (mL)': '',
           };
           Navigator.push(
             context,
@@ -116,7 +114,7 @@ class _ListBuilderState extends State<ListBuilder> {
   @override
   Widget build(BuildContext context) {
     for (DocumentSnapshot document in entries) {
-      names.add(document['Data da transação']);
+      names.add(document['Data do registo']);
     }
 
     return Scaffold(

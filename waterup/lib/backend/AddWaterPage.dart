@@ -14,7 +14,7 @@ Future<List<DocumentSnapshot>> getWaterHistoryList() async {
     CollectionReference document = firestore
         .collection('WaterHistory')
         .doc(FirebaseAuth.instance.currentUser?.email)
-        .collection('category');
+        .collection('2024').doc('04').collection('10');
 
     QuerySnapshot querySnapshot =
         await document.get(); // find a way to get this
@@ -41,7 +41,7 @@ Future<void> deleteTransaction(String documentId) async {
         .doc(FirebaseAuth.instance.currentUser?.email);
 
     // Delete the document
-    await document.collection('category').doc(documentId).delete();
+    await document.collection('2024').doc(documentId).delete();
 
     log('Document deleted successfully!');
   } catch (e) {
@@ -75,7 +75,6 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
   String? selectedBudget;
 
   final TextEditingController _checkDateController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _monetaryValueController =
       TextEditingController();
   final TextEditingController _typeController = TextEditingController();
@@ -98,12 +97,8 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
       });
 
       // Pre-fill the text fields with the existing budget data
-      _checkDateController.text = widget.transactionData?['Data da transação'];
-      _descriptionController.text = widget.transactionData?['Descrição'];
-      _monetaryValueController.text =
-          widget.transactionData?['Valor monetário'];
-      _typeController.text = widget.transactionData?['tipo'];
-      selectedBudget = widget.transactionData?['budgetId'];
+      _checkDateController.text = widget.transactionData?['Data do registo'];
+      _monetaryValueController.text = widget.transactionData?['Quantidade de água (mL)'];
 
       update = widget.control;
     } catch (e) {
@@ -112,10 +107,10 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
     }
   }
 
-  Future<void> registerTransaction(String date, String description,
-      String value, String category, String? budget) async {
+  Future<void> registerTransaction(String date,
+      String value, String category) async {
     try {
-      _performTransactionCheck(date, description, value, category);
+      _performTransactionCheck(date, value);
 
       FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -128,11 +123,8 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
       // Create a reference to the category
       //await transactions.collection('category').doc(transactionCategory).collection('docs').add({'Data da transação': checkDate(date), 'Descrição': description, 'Valor monetário': value});
       await transactions.collection(date).doc().set({
-        'Data da transação': checkDate(date),
-        'Descrição': description,
-        'Valor monetário': value,
-        'tipo': transactionCategory,
-        'budgetId': budget,
+        'Data do registo': checkDate(date),
+        'Quantidade de água (mL)': value,
       });
       await _showSuccessDialog();
     } catch (e) {
@@ -170,11 +162,10 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
     }
   }
 
-  Future<void> updateTransaction(String date, String description, String value,
-      String category, String? budget) async {
+  Future<void> updateTransaction(String date, String value, String category) async {
     try {
       log('${FirebaseAuth.instance.currentUser}');
-      _performTransactionCheck(date, description, value, category);
+      _performTransactionCheck(date, value);
 
       FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -187,14 +178,11 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
       // Create a reference to the category
       //await transactions.collection('category').doc(transactionCategory).collection('docs').add({'Data da transação': checkDate(date), 'Descrição': description, 'Valor monetário': value});
       await transactions
-          .collection('category')
+          .collection('2024')
           .doc(widget.controlDocId)
           .update({
-        'Data da transação': checkDate(date),
-        'Descrição': description,
-        'Valor monetário': value,
-        'tipo': transactionCategory,
-        'budgetId': budget,
+        'Data do registo': checkDate(date),
+        'Quantidade de água (mL)': value,
       });
       await _showSuccessDialog();
     } catch (e) {
@@ -235,7 +223,7 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Success'),
-          content: const Text('Transaction added successfully!'),
+          content: const Text('Water added successfully!'),
           actions: [
             TextButton(
               onPressed: () {
@@ -273,12 +261,6 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
     });
   }
 
-  void _clearDescriptionError() {
-    setState(() {
-      errorDescriptionMessage = '';
-    });
-  }
-
   void _setValueError(String error) {
     setState(() {
       // Extract the error message from the error string
@@ -310,7 +292,7 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
   }
 
   void _performTransactionCheck(
-      String date, String description, String value, String category) {
+      String date, String value) {
     DateTime? parsedDate;
     try {
       date = date.replaceAll('/', '-');
@@ -324,26 +306,7 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
 
     _clearDateError(); // Clear any previous errors
 
-    if (description.trim().isEmpty) {
-      throw FirebaseAuthException(
-        code: 'Blank-Description',
-      );
-    }
-    _clearDescriptionError(); // Clear any previous errors
-
-    if (!isValidValue(value)) {
-      throw FirebaseAuthException(
-        code: 'Invalid-Value',
-      );
-    }
-
     _clearValueError(); // Clear any previous errors
-
-    if (category.trim().isEmpty) {
-      throw FirebaseAuthException(
-        code: 'Blank-Type',
-      );
-    }
 
     _clearTypeError(); // Clear any previous errors
   }
@@ -363,7 +326,7 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
             TextFormField(
               controller: _checkDateController,
               decoration: const InputDecoration(
-                labelText: 'Data da transação',
+                labelText: 'Data',
               ),
               onTap: () async {
                 DateTime? pickedDate = await showDatePicker(
@@ -388,71 +351,32 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
                 style: const TextStyle(color: Colors.red),
               ),
             TextField(
-              controller: _descriptionController,
-              decoration: const InputDecoration(labelText: 'Descrição'),
-              // Add const to InputDecoration
-            ),
-            if (errorDescriptionMessage
-                .isNotEmpty) // Display error if there is one
-              Text(
-                errorDescriptionMessage,
-                style: const TextStyle(color: Colors.red),
-              ),
-            TextField(
               controller: _monetaryValueController,
               decoration: const InputDecoration(
-                  labelText: 'Valor monetário'), // Add const to InputDecoration
+                  labelText: 'Quantidade de água (mL)'), // Add const to InputDecoration
             ),
             if (errorValueMessage.isNotEmpty) // Display error if there is one
               Text(
                 errorValueMessage,
                 style: const TextStyle(color: Colors.red),
               ),
-            TextField(
-              controller: _typeController,
-              decoration: const InputDecoration(
-                  labelText: 'tipo'), // Add const to InputDecoration
-            ),
-            if (errorTypeMessage.isNotEmpty) // Display error if there is one
-              Text(
-                errorTypeMessage,
-                style: const TextStyle(color: Colors.red),
-              ),
-            DropdownButton<String>(
-              value: selectedBudget,
-              hint: const Text('Select a budget'),
-              onChanged: (String? newValue) {
-                setState(() {
-                  selectedBudget = newValue;
-                });
-              },
-              items: widget.budgets.map<DropdownMenuItem<String>>(
-                (String budget) {
-                  return DropdownMenuItem<String>(
-                    value: budget,
-                    child: Text(budget),
-                  );
-                },
-              ).toList(),
-            ),
 
             const SizedBox(height: 20), // Add const to SizedBox
             ElevatedButton(
               onPressed: () {
                 String thisDate = _checkDateController.text.trim();
-                String thisDescription = _descriptionController.text.trim();
                 String thisMonetaryValue = _monetaryValueController.text.trim();
                 String thisName = _typeController.text.trim();
                 if (update == false) {
-                  registerTransaction(thisDate, thisDescription,
-                      thisMonetaryValue, thisName, selectedBudget);
+                  registerTransaction(thisDate,
+                      thisMonetaryValue,thisName);
                 } else {
-                  updateTransaction(thisDate, thisDescription,
-                      thisMonetaryValue, thisName, selectedBudget);
+                  updateTransaction(thisDate,
+                      thisMonetaryValue,thisName);
                 }
               },
               child:
-                  const Text('Guardar transação'), // Add const to Text widget
+                  const Text('Guardar registo de água'), // Add const to Text widget
             ),
           ],
         ),
