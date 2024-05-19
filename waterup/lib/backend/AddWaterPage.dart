@@ -59,6 +59,7 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
   String errorValueMessage = '';
   String selectedWaterAmount = '';
   bool update = false;
+  bool isCustomSelected = false;
 
   @override
   void initState() {
@@ -168,16 +169,11 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
     });
   }
 
-  void _clearValueError() {
-    setState(() {
-      errorValueMessage = '';
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(236, 201, 198, 198),
+      backgroundColor: const Color.fromARGB(236, 201, 198, 198),
       appBar: AppBar(
         title: const Text('Add Water'),
       ),
@@ -191,79 +187,30 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
                 errorValueMessage,
                 style: const TextStyle(color: Colors.red),
               ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            Wrap(
+              spacing: 10.0,
+              runSpacing: 10.0,
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      selectedWaterAmount = '100';
-                    });
-                  },
-                  child: const Text('100 mL'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      selectedWaterAmount = '150';
-                    });
-                  },
-                  child: const Text('150 mL'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      selectedWaterAmount = '200';
-                    });
-                  },
-                  child: const Text('200 mL'),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      selectedWaterAmount = '333';
-                    });
-                  },
-                  child: const Text('333 mL'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      selectedWaterAmount = '500';
-                    });
-                  },
-                  child: const Text('500 mL'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      selectedWaterAmount = '1000';
-                    });
-                  },
-                  child: const Text('1000 mL'),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+                _buildWaterButton('100'),
+                _buildWaterButton('150'),
+                _buildWaterButton('200'),
+                _buildWaterButton('333'),
+                _buildWaterButton('500'),
+                _buildWaterButton('1000'),
                 ElevatedButton(
                   onPressed: () async {
                     String? customAmount = await showDialog<String>(
                       context: context,
                       builder: (BuildContext context) {
-                        TextEditingController customController = TextEditingController();
+                        TextEditingController customController =
+                            TextEditingController();
                         return AlertDialog(
                           title: const Text('Enter custom amount'),
                           content: TextField(
                             controller: customController,
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(hintText: "Enter amount in mL"),
+                            decoration:
+                                const InputDecoration(hintText: "Enter amount in mL"),
                           ),
                           actions: [
                             TextButton(
@@ -279,9 +226,13 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
                     if (customAmount != null && customAmount.isNotEmpty) {
                       setState(() {
                         selectedWaterAmount = customAmount;
+                        isCustomSelected = true;
                       });
                     }
                   },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isCustomSelected ? Colors.grey : null,
+                  ),
                   child: const Text('Custom'),
                 ),
               ],
@@ -300,6 +251,21 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildWaterButton(String amount) {
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          selectedWaterAmount = amount;
+          isCustomSelected = false;
+        });
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: selectedWaterAmount == amount && !isCustomSelected ? Colors.grey : null,
+      ),
+      child: Text('$amount mL'),
     );
   }
 
