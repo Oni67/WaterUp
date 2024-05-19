@@ -79,7 +79,8 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
       });
 
       if (widget.transactionData != null) {
-        selectedWaterAmount = widget.transactionData!['Quantidade de água (mL)'];
+        selectedWaterAmount =
+            widget.transactionData!['Quantidade de água (mL)'];
       }
 
       update = widget.control;
@@ -90,64 +91,64 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
   }
 
   Future<void> registerTransaction(String value) async {
-  try {
-    if (value.isEmpty) {
-      throw FirebaseAuthException(code: 'Invalid-Value');
+    try {
+      if (value.isEmpty) {
+        throw FirebaseAuthException(code: 'Invalid-Value');
+      }
+
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      String currentDate = DateFormat('yyyy/MM/dd').format(DateTime.now());
+
+      DocumentReference transactions = firestore
+          .collection('WaterHistory')
+          .doc(FirebaseAuth.instance.currentUser?.email);
+
+      await transactions.collection('2024').doc().set({
+        'Data do registo': currentDate,
+        'Quantidade de água (mL)': value,
+      });
+
+      await _showSuccessDialog();
+      Navigator.pop(context, true); // Pop with a result to indicate success
+    } catch (e) {
+      errorValueMessage = '';
+      if (e is FirebaseAuthException && e.code == 'Invalid-Value') {
+        errorValueMessage = 'Invalid Value';
+      }
+      log('$e');
+      _setValueError(errorValueMessage);
     }
-
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    String currentDate = DateFormat('yyyy/MM/dd').format(DateTime.now());
-
-    DocumentReference transactions = firestore
-        .collection('WaterHistory')
-        .doc(FirebaseAuth.instance.currentUser?.email);
-
-    await transactions.collection('2024').doc().set({
-      'Data do registo': currentDate,
-      'Quantidade de água (mL)': value,
-    });
-
-    await _showSuccessDialog();
-    Navigator.pop(context, true); // Pop with a result to indicate success
-  } catch (e) {
-    errorValueMessage = '';
-    if (e is FirebaseAuthException && e.code == 'Invalid-Value') {
-      errorValueMessage = 'Invalid Value';
-    }
-    log('$e');
-    _setValueError(errorValueMessage);
   }
-}
 
   Future<void> updateTransaction(String value) async {
-  try {
-    if (value.isEmpty) {
-      throw FirebaseAuthException(code: 'Invalid-Value');
+    try {
+      if (value.isEmpty) {
+        throw FirebaseAuthException(code: 'Invalid-Value');
+      }
+
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      String currentDate = DateFormat('yyyy/MM/dd').format(DateTime.now());
+
+      DocumentReference transactions = firestore
+          .collection('WaterHistory')
+          .doc(FirebaseAuth.instance.currentUser?.email);
+
+      await transactions.collection('2024').doc(widget.controlDocId).update({
+        'Data do registo': currentDate,
+        'Quantidade de água (mL)': value,
+      });
+
+      await _showSuccessDialog();
+      Navigator.pop(context, true); // Pop with a result to indicate success
+    } catch (e) {
+      errorValueMessage = '';
+      if (e is FirebaseAuthException && e.code == 'Invalid-Value') {
+        errorValueMessage = 'Invalid Value';
+      }
+      log('$e');
+      _setValueError(errorValueMessage);
     }
-
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    String currentDate = DateFormat('yyyy/MM/dd').format(DateTime.now());
-
-    DocumentReference transactions = firestore
-        .collection('WaterHistory')
-        .doc(FirebaseAuth.instance.currentUser?.email);
-
-    await transactions.collection('2024').doc(widget.controlDocId).update({
-      'Data do registo': currentDate,
-      'Quantidade de água (mL)': value,
-    });
-
-    await _showSuccessDialog();
-    Navigator.pop(context, true); // Pop with a result to indicate success
-  } catch (e) {
-    errorValueMessage = '';
-    if (e is FirebaseAuthException && e.code == 'Invalid-Value') {
-      errorValueMessage = 'Invalid Value';
-    }
-    log('$e');
-    _setValueError(errorValueMessage);
   }
-}
 
   Future<void> _showSuccessDialog() async {
     await showDialog(
@@ -160,9 +161,11 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
             TextButton(
               onPressed: () {
                 Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const NavigationExample(initialPageIndex: 1)),
-                    );
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          const NavigationExample(initialPageIndex: 1)),
+                );
               },
               child: const Text('OK'),
             ),
@@ -178,90 +181,124 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
     });
   }
 
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(236, 201, 198, 198),
-      appBar: AppBar(
-        title: const Text('Add Water'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (errorValueMessage.isNotEmpty)
-              Text(
-                errorValueMessage,
-                style: const TextStyle(color: Colors.red),
-              ),
-            Wrap(
-              spacing: 10.0,
-              runSpacing: 10.0,
-              children: [
-                _buildWaterButton('100'),
-                _buildWaterButton('150'),
-                _buildWaterButton('200'),
-                _buildWaterButton('333'),
-                _buildWaterButton('500'),
-                _buildWaterButton('1000'),
-                ElevatedButton(
-                  onPressed: () async {
-                    String? customAmount = await showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) {
-                        TextEditingController customController =
-                            TextEditingController();
-                        return AlertDialog(
-                          title: const Text('Enter custom amount'),
-                          content: TextField(
-                            controller: customController,
-                            keyboardType: TextInputType.number,
-                            decoration:
-                                const InputDecoration(hintText: "Enter amount in mL"),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context, customController.text);
-                              },
-                              child: const Text('OK'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                    if (customAmount != null && customAmount.isNotEmpty) {
-                      setState(() {
-                        selectedWaterAmount = customAmount;
-                        isCustomSelected = true;
-                      });
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: isCustomSelected ? Colors.grey : null,
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: const Color.fromARGB(236, 201, 198, 198),
+    appBar: AppBar(
+      title: const Text('Add Water'),
+    ),
+    body: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (errorValueMessage.isNotEmpty)
+            Text(
+              errorValueMessage,
+              style: const TextStyle(color: Colors.red),
+            ),
+          Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: _buildWaterButton('100'),
                   ),
-                  child: const Text('Custom'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                if (update == false) {
-                  registerTransaction(selectedWaterAmount);
-                } else {
-                  updateTransaction(selectedWaterAmount);
-                }
-              },
-              child: const Text('Save Water Record'),
-            ),
-          ],
-        ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: _buildWaterButton('150'),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: _buildWaterButton('200'),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: _buildWaterButton('333'),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: _buildWaterButton('500'),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: _buildWaterButton('1000'),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        String? customAmount = await showDialog<String>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            TextEditingController customController =
+                                TextEditingController();
+                            return AlertDialog(
+                              title: const Text('Enter custom amount'),
+                              content: TextField(
+                                controller: customController,
+                                keyboardType: TextInputType.number,
+                                decoration:
+                                    const InputDecoration(hintText: "Enter amount in mL"),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context, customController.text);
+                                  },
+                                  child: const Text('OK'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                        if (customAmount != null && customAmount.isNotEmpty) {
+                          setState(() {
+                            selectedWaterAmount = customAmount;
+                            isCustomSelected = true;
+                          });
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isCustomSelected ? Colors.grey : null,
+                      ),
+                      child: const Text('Custom'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              if (update == false) {
+                registerTransaction(selectedWaterAmount);
+              } else {
+                updateTransaction(selectedWaterAmount);
+              }
+            },
+            child: const Text('Save Water Record'),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   Widget _buildWaterButton(String amount) {
     return ElevatedButton(
@@ -272,7 +309,9 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
         });
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: selectedWaterAmount == amount && !isCustomSelected ? Colors.grey : null,
+        backgroundColor: selectedWaterAmount == amount && !isCustomSelected
+            ? Colors.grey
+            : null,
       ),
       child: Text('$amount mL'),
     );
