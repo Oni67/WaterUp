@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:waterup/pages/HowTo.dart';
 import 'package:waterup/pages/Water_History.dart';
 import 'package:waterup/pages/profile_page.dart';
-import 'package:waterup/pages/recurring_transactions.dart';
 import 'package:waterup/pages/start.dart';
 import 'package:waterup/pages/dashboard.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -67,10 +66,6 @@ class _NavigationExampleState extends State<NavigationExample> {
             label: 'Add Water',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.stars),
-            label: 'Achievements',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.info_outline),
             label: 'How to',
           ),
@@ -83,9 +78,8 @@ class _NavigationExampleState extends State<NavigationExample> {
       body: [
         const Dashboard(),
         const WaterHistoryPage(),
-        const RecurrentTransactionsPage(),
         const HowToPage(),
-        ProfilePage(),
+        const ProfileForm(),
       ][currentPageIndex],
     );
   }
