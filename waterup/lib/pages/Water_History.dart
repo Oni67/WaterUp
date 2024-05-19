@@ -126,20 +126,10 @@ class _ListBuilderState extends State<ListBuilder> {
           Container(
             color: Colors.blue, // Set the color of the banner to blue
             padding: EdgeInsets.symmetric(vertical: 10),
-            child: Row(
+            child: const Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                IconButton(
-                  icon: const Icon(Icons.logout, color: Colors.white), // Icon color set to white
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => MyHomePage()),
-                    );
-                  },
-                ),
-                const Text(
+                Text(
                   'WaterUp',
                   style: TextStyle(
                     color: Colors.white, // Set the text color to white
@@ -147,7 +137,6 @@ class _ListBuilderState extends State<ListBuilder> {
                     fontSize: 20.0,
                   ),
                 ),
-                const SizedBox( width: 40), // Adjust the space between the icon and text as needed
               ],
             ),
           ),

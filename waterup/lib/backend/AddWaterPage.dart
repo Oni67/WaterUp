@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:waterup/pages/Water_History.dart';
+import 'package:waterup/main.dart';
 
 Future<List<DocumentSnapshot>> getWaterHistoryList() async {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -155,7 +157,10 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const NavigationExample(initialPageIndex: 1)),
+                    );
               },
               child: const Text('OK'),
             ),

@@ -80,26 +80,16 @@ class BudgetingState extends State<HowTo> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(236, 201, 198, 198),
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight + 30),
-        child: Container(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
             color: Colors.blue, // Set the color of the banner to blue
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Row(
+            padding: EdgeInsets.symmetric(vertical: 10),
+            child: const Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                IconButton(
-                  icon: const Icon(Icons.logout,
-                      color: Colors.white), // Icon color set to white
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => MyHomePage()),
-                    );
-                  },
-                ),
-                const Text(
+                Text(
                   'WaterUp',
                   style: TextStyle(
                     color: Colors.white, // Set the text color to white
@@ -107,62 +97,65 @@ class BudgetingState extends State<HowTo> {
                     fontSize: 20.0,
                   ),
                 ),
-                const SizedBox(width: 40), // Adjust the space between the icon and text as needed 
               ],
             ),
           ),
-      ),
-      body:
-      ListView.builder(
-        itemCount: 20,
-        itemBuilder: (context, index) {
-          return Column(
-            children: [
-              const SizedBox(height: 20),
-              SizedBox(
-                width: 500, // Same width as the buttons
-                child: ElevatedButton(
-                  style: ButtonStyle(
-                    foregroundColor:
-                        MaterialStateProperty.all<Color>(Colors.white),
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        Color.fromARGB(255, 25, 164, 206)),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _showExplanationList[index] =
-                          !_showExplanationList[index];
-                      for (int i = 0; i < _showExplanationList.length; i++) {
-                        if (i != index) {
-                          _showExplanationList[i] = false;
-                        }
-                      }
-                    });
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15, horizontal: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.arrow_downward),
-                        const SizedBox(width: 2),
-                        Text(buttonTexts[index]),
-                      ],
+          Expanded(
+            child: ListView.builder(
+              itemCount: 20,
+              itemBuilder: (context, index) {
+                return Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: 500, // Same width as the buttons
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              Color.fromARGB(255, 25, 164, 206)),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _showExplanationList[index] =
+                                !_showExplanationList[index];
+                            for (int i = 0;
+                                i < _showExplanationList.length;
+                                i++) {
+                              if (i != index) {
+                                _showExplanationList[i] = false;
+                              }
+                            }
+                          });
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.arrow_downward),
+                              const SizedBox(width: 2),
+                              Text(buttonTexts[index]),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
-              if (_showExplanationList[index])
-                ExplanationDialog(
-                  message: messages[index],
-                  onClose: () =>
-                      setState(() => _showExplanationList[index] = false),
-                ),
-              const SizedBox(height: 15), // Add space between buttons
-            ],
-          );
-        },
+                    if (_showExplanationList[index])
+                      ExplanationDialog(
+                        message: messages[index],
+                        onClose: () =>
+                            setState(() => _showExplanationList[index] = false),
+                      ),
+                    const SizedBox(height: 15), // Add space between buttons
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

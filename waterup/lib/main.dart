@@ -26,14 +26,22 @@ class NavigationBarApp extends StatelessWidget {
 }
 
 class NavigationExample extends StatefulWidget {
-  const NavigationExample({super.key});
+  final int initialPageIndex;
+
+  const NavigationExample({super.key, this.initialPageIndex = 0});
 
   @override
   State<NavigationExample> createState() => _NavigationExampleState();
 }
 
 class _NavigationExampleState extends State<NavigationExample> {
-  int currentPageIndex = 0;
+  late int currentPageIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    currentPageIndex = widget.initialPageIndex;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,15 +70,16 @@ class _NavigationExampleState extends State<NavigationExample> {
             label: 'Achievements',
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.info_outline),
-              label: 'How to',),
+            icon: Icon(Icons.info_outline),
+            label: 'How to',
+          ),
         ],
       ),
       body: [
         const Dashboard(),
-        const WaterHistoryPage(), //Add Water
-        const RecurrentTransactionsPage(), // Achievements
-        const HowToPage(), //How to
+        const WaterHistoryPage(),
+        const RecurrentTransactionsPage(),
+        const HowToPage(),
       ][currentPageIndex],
     );
   }
