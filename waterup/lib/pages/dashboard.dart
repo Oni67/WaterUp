@@ -1,11 +1,8 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
 import 'package:waterup/components/pie_graph.dart';
 import 'package:flutter/material.dart';
 import 'package:waterup/pages/start.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:waterup/backend/orçamentos.dart';
+import 'package:intl/intl.dart';
 
 class Dashboard extends StatelessWidget {
   const Dashboard({Key? key});
@@ -26,8 +23,16 @@ class Graph extends StatefulWidget {
 class GraphComponent extends State<Graph> {
   late String selectedOption = '';
   List<String> listContents = [];
-  List<double> percentages = [65, 35];
+  List<double> percentages = [0, 100];
+  double water = 0;
   Map<String, int> temp = {};
+  bool _dataLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,191 +41,136 @@ class GraphComponent extends State<Graph> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(kToolbarHeight + 30),
         child: Container(
-          color: Colors.blue, // Set the color of the banner to blue
-            padding: const EdgeInsets.symmetric(vertical: 10),
+          color: Colors.blue,
+          padding: const EdgeInsets.symmetric(vertical: 10),
           child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.logout,
-                      color: Colors.white), // Icon color set to white
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => MyHomePage()),
-                    );
-                  },
-                ),
-                const Text(
-                  'WaterUp',
-                  style: TextStyle(
-                    color: Colors.white, // Set the text color to white
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20.0,
-                  ),
-                ),
-                const SizedBox(width:40), // Adjust the space between the icon and text as needed
-              ],
-            ),
-        )),
-      body: SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Center(
-            child: Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Text(
-                'Tip of the Day:',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20.0,
-                ),
-              ),
-            ),
-          ),
-          const Center(
-            child: Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Text(
-                ' "Drinking water is not only good for your health, it can also help you regulate the temperature of your body" ',
-                style: TextStyle(
-                  fontSize: 18.0,
-                ),
-              ),
-            ),
-          ),
-          FutureBuilder(
-            future: fetchBudgetsFromFirebase(),
-            builder: (context, AsyncSnapshot<List<String>> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else {
-                return Column(
-                  children: [
-                    PieGraph(percentages),
-                  ],
-                );
-              }
-            },
-          ),
-          const Center(
-            child: Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Text(
-                'Daily Goal',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20.0,
-                ),
-              ),
-            ),
-          ),
-          const Center(
-            child: Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Text(
-                '1.3/2 L',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20.0,
-                ),
-              ),
-            ),
-          ),
-          const Center(
-            child: Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Text(
-                'You’re almost at your daily goal! Keep it up!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20.0,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            child: FutureBuilder(
-              future: Future.value(null),
-              builder: (context, AsyncSnapshot<void> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else {
-                  return ListView.builder(
-                    itemCount: listContents.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                        child: ListTile(
-                          title: Text(
-                            '${percentages[index]}% ${listContents[index]}',
-                            textScaler: TextScaler.linear(0.90),
-                          ),
-                          trailing: const Row(
-                            mainAxisSize: MainAxisSize.min,
-                          ),
-                        ),
-                      );
-                    },
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.logout, color: Colors.white),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyHomePage()),
                   );
-                }
-              },
-            ),
+                },
+              ),
+              const Text(
+                'WaterUp',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+                ),
+              ),
+              const SizedBox(width: 40),
+            ],
           ),
-        ],
+        ),
       ),
-    ));
+      body: _dataLoaded
+          ? SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: Text(
+                        'Tip of the Day:',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: Text(
+                        ' "Drinking water is not only good for your health, it can also help you regulate the temperature of your body" ',
+                        style: TextStyle(
+                          fontSize: 18.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  PieGraph(percentages),
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: Text(
+                        'Daily Goal',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Text(
+                        '$water L / 2 L',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: Text(
+                        'You’re almost at your daily goal! Keep it up!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : Center(child: CircularProgressIndicator()),
+    );
   }
 
-  Future<void> getPercentage(String id) async {
-    List<double> temp = await calculatePercentage(id);
+  Future<void> loadData() async {
+    await Future.wait([getPercentage(), getTodayWater()]);
+    setState(() {
+      _dataLoaded = true;
+    });
+  }
+
+  Future<void> getPercentage() async {
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('yyyy/MM/dd').format(now);
+    List<double> temp = await calculatePercentage(formattedDate);
     setState(() {
       percentages = temp;
     });
   }
 
-  Future<void> loadTransactions(String id) async {
-    Map<String, int> trans = await getTransactionsByBudget(id);
-    List<String> updatedListContents = [];
-
-    trans.forEach((key, value) {
-      updatedListContents.add('$key: $value€');
-    });
-
-    setState(() {
-      temp = trans;
-      listContents = updatedListContents;
-    });
-  }
-
-  Future<List<String>> fetchBudgetsFromFirebase() async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    // Replace 'yourCollection' with the actual name of your Firebase collection
-    DocumentReference document = firestore
-        .collection('budget')
-        .doc(FirebaseAuth.instance.currentUser?.email);
-
-    QuerySnapshot querySnapshot = await document.collection('budgets').get();
-
-    List<String> budgetList = [];
-    for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
-      // Assuming you have a field named 'budgetName' in your documents
-      String budgetName = documentSnapshot['Nome'];
-      budgetList.add(budgetName);
+  Future<void> getTodayWater() async {
+    int temp = 0;
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('yyyy/MM/dd').format(now);
+    Map<String, int> current = await getWaterHistoryByDate(formattedDate);
+    for (int i in current.values) {
+      temp += i;
     }
-    return budgetList;
+    setState(() {
+      water = temp / 1000;
+    });
   }
 }
