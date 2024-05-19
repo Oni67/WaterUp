@@ -68,44 +68,50 @@ Future<int> getBudgetMax(String budgetId) async {
   }
 }
 
-Future<Map<String,int>> getTransactionsByBudget(String budgetId) async {
+Future<Map<String,int>> getWaterHistoryByDate(String date) async {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   try{
     String temp = '';
+    int tempInt = 0;
     Map<String,int> transactions = {};
     CollectionReference documentTransaction = firestore
-        .collection('transactions')
+        .collection('WaterHistory')
         .doc(FirebaseAuth.instance.currentUser?.email)
-        .collection('category');
+        .collection('2024');
 
     QuerySnapshot querySnapshotTransaction =
         await documentTransaction.get();
-
     // Access transactions fields
       for (DocumentSnapshot document in querySnapshotTransaction.docs) {
-        log('Data da transação: ${document['Data da transação']}, Descrição: ${document['Descrição']}, Valor monetário: ${document['Valor monetário']}, budgetId: ${document['budgetId']}, tipo: ${document['tipo']}');
-        if(document['budgetId'] == budgetId){
-          temp = document['Valor monetário'];
-          transactions[document['Descrição']] = int.parse(temp);
+        log('Data do registo: ${document['Data do registo']}, Quantidade de água: ${document['Quantidade de água (mL)']}');
+        if(document['Data do registo'] == date){
+          temp = document['Quantidade de água (mL)'];
+          tempInt += int.parse(temp);
         }
+        transactions[document['Data do registo']] = tempInt;
       }
-  print('Transactions: $transactions');
+  log('Transactions: $transactions');
   return transactions;
   } catch (e) {
-    print('Error getting budget list: $e');
+    log('Error getting water list: $e');
     return {};
   }
 }
 
-//Do something with this ******************************************
-Future<List<double>> calculatePercentage(String budgetId) async {
+Future<List<double>> calculatePercentage(String date) async {
   try {
-    int max = await getBudgetMax(budgetId);
+    int max = 2000;
     double percent = 100;
-    Map<String,int> current = await getTransactionsByBudget(budgetId);
+    double temp = 0;
+    Map<String,int> current = await getWaterHistoryByDate(date);
     List<double> percentage = [];
     for(int i in current.values){
-      percentage.add((i / max) * 100);
+      temp += (i / max) * 100;
+    }
+    if(temp > 100){
+      percentage.add(100);
+    }else{
+    percentage.add(temp);
     }
     for (double e in percentage){
       percent -= e;
@@ -114,6 +120,7 @@ Future<List<double>> calculatePercentage(String budgetId) async {
       }
     }
     percentage.add(percent);
+    log("$percentage");
     print(percentage);
     return percentage;
   } catch (e) {
