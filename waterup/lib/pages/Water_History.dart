@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:waterup/data/fake_data.dart';
 import 'package:waterup/backend/AddWaterPage.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:intl/intl.dart';
 
 class WaterHistoryPage extends StatelessWidget {
   const WaterHistoryPage({Key? key});
@@ -21,13 +22,26 @@ class WaterHistory extends StatefulWidget {
   WaterHistoryState createState() => WaterHistoryState();
 }
 
+class BudgetList {
+  List<String> waterHistory;
+
+  BudgetList() : waterHistory = [];
+
+  BudgetList.withInitialValues(List<String> initialValues)
+      : waterHistory = initialValues;
+
+  String? get first => null;
+}
+
 class WaterHistoryState extends State<WaterHistory> {
   late List<bool> _selected;
-  final int listLength = BudgetList().budgetList.length;
+  late DateTime _currentWeek;
+  final int listLength = BudgetList().waterHistory.length;
 
   @override
   void initState() {
     super.initState();
+    _currentWeek = DateTime.now();
     initializeSelection();
   }
 
@@ -35,16 +49,27 @@ class WaterHistoryState extends State<WaterHistory> {
     _selected = List<bool>.generate(listLength, (_) => false);
   }
 
+  void _previousWeek() {
+    setState(() {
+      _currentWeek = _currentWeek.subtract(const Duration(days: 7));
+    });
+  }
+
+  void _nextWeek() {
+    setState(() {
+      _currentWeek = _currentWeek.add(const Duration(days: 7));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(236, 201, 198, 198),
+      backgroundColor: const Color.fromARGB(236, 201, 198, 198),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Provide default data or an empty map
           Map<String, dynamic> defaultData = {
             'Data do registo': '',
-            'Quantidade de Água (mL)': '',
+            'Quantidade de água (mL)': '',
           };
           Navigator.push(
             context,
@@ -62,13 +87,179 @@ class WaterHistoryState extends State<WaterHistory> {
         elevation: 2.0,
         child: const Icon(Icons.add, size: 35, color: Colors.white),
       ),
-      body: ListBuilder(
-        selectedList: _selected,
-        onSelectionChange: (bool x) {
-          setState(() {});
-        },
+      body: Column(
+        children: [
+          Expanded(
+            child: ListBuilder(
+              selectedList: _selected,
+              onSelectionChange: (bool x) {
+                setState(() {});
+              },
+            ),
+          ),
+          _buildWeekNavigation(),
+          _buildBarChart(),
+        ],
       ),
     );
+  }
+
+  Widget _buildWeekNavigation() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: _previousWeek,
+        ),
+        Text(
+          'Week of ${DateFormat.yMMMd().format(_currentWeek)}',
+          style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+        ),
+        IconButton(
+          icon: const Icon(Icons.arrow_forward),
+          onPressed: _nextWeek,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBarChart() {
+    return FutureBuilder(
+      future: _fetchWeeklyData(),
+      builder: (context, AsyncSnapshot<Map<String, double>> snapshot) {
+        if (!snapshot.hasData) {
+          return const CircularProgressIndicator();
+        }
+
+        final data = snapshot.data!;
+        final barGroups = data.entries.map((entry) {
+          int dayIndex = _getDayIndex(entry.key);
+          return BarChartGroupData(
+            x: dayIndex,
+            barRods: [
+              BarChartRodData(
+                toY: entry.value,
+                color: Colors.blue,
+                width: 22,
+                backDrawRodData: BackgroundBarChartRodData(
+                  show: true,
+                  toY:
+                      5000, // Adjust this value to match the maximum expected value
+                  color: Colors.grey[300]!,
+                ),
+              ),
+            ],
+          );
+        }).toList();
+
+        return SizedBox(
+          height: 200,
+          child: BarChart(
+            BarChartData(
+              alignment: BarChartAlignment.spaceAround,
+              barGroups: barGroups,
+              titlesData: FlTitlesData(
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    getTitlesWidget: (value, meta) {
+                      final days = [
+                        'Mon',
+                        'Tue',
+                        'Wed',
+                        'Thu',
+                        'Fri',
+                        'Sat',
+                        'Sun'
+                      ];
+                      return SideTitleWidget(
+                        axisSide: meta.axisSide,
+                        child: Text(days[value.toInt()]),
+                      );
+                    },
+                  ),
+                ),
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(showTitles: true),
+                ),
+                topTitles: AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                rightTitles: AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+              ),
+              borderData: FlBorderData(
+                show: true,
+                border: Border.all(color: Colors.grey, width: 1),
+              ),
+              gridData: FlGridData(show: false),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<Map<String, double>> _fetchWeeklyData() async {
+    final startOfWeek =
+        _currentWeek.subtract(Duration(days: _currentWeek.weekday - 1));
+    final endOfWeek = startOfWeek.add(const Duration(days: 6));
+
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('water_history')
+        .where('Data do registo',
+            isGreaterThanOrEqualTo:
+                DateFormat('yyyy/MM/dd').format(startOfWeek))
+        .where('Data do registo',
+            isLessThanOrEqualTo: DateFormat('yyyy/MM/dd').format(endOfWeek))
+        .get();
+
+    // Initialize all days with 0.0
+    final data = {
+      'Mon': 0.0,
+      'Tue': 0.0,
+      'Wed': 0.0,
+      'Thu': 0.0,
+      'Fri': 0.0,
+      'Sat': 0.0,
+      'Sun': 0.0,
+    };
+
+    for (var doc in querySnapshot.docs) {
+      final dateString = doc['Data do registo'];
+      final date = DateFormat('yyyy/MM/dd').parse(dateString);
+      final day = DateFormat('EEE').format(date);
+      final quantity = (doc['Quantidade de água (mL)'] as num).toDouble();
+
+      if (data.containsKey(day)) {
+        data[day] = data[day]! + quantity;
+      }
+    }
+
+    return data;
+  }
+
+  int _getDayIndex(String day) {
+    switch (day) {
+      case 'Mon':
+        return 0;
+      case 'Tue':
+        return 1;
+      case 'Wed':
+        return 2;
+      case 'Thu':
+        return 3;
+      case 'Fri':
+        return 4;
+      case 'Sat':
+        return 5;
+      case 'Sun':
+        return 6;
+      default:
+        return 0;
+    }
   }
 }
 
@@ -112,26 +303,30 @@ class _ListBuilderState extends State<ListBuilder> {
 
   @override
   Widget build(BuildContext context) {
+    names.clear();
     for (DocumentSnapshot document in entries) {
-      String temp = document['Data do registo'] + ": " + document['Quantidade de água (mL)'] + "mL";
+      String temp = document['Data do registo'] +
+          ": " +
+          document['Quantidade de água (mL)'].toString() +
+          "mL";
       names.add(temp);
     }
 
     return Scaffold(
-      backgroundColor: Color.fromARGB(236, 201, 198, 198),
+      backgroundColor: const Color.fromARGB(236, 201, 198, 198),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            color: Colors.blue, // Set the color of the banner to blue
-            padding: EdgeInsets.symmetric(vertical: 10),
+            color: Colors.blue,
+            padding: const EdgeInsets.symmetric(vertical: 10),
             child: const Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'WaterUp',
                   style: TextStyle(
-                    color: Colors.white, // Set the text color to white
+                    color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 20.0,
                   ),
@@ -165,11 +360,10 @@ class _ListBuilderState extends State<ListBuilder> {
                         ),
                       ),
                       trailing: Wrap(
-                        spacing: 10, // Space between buttons
+                        spacing: 10,
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.delete,
-                                color: Colors.red),
+                            icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () {
                               deleteTransaction(entries[index].id);
                               _loadData();
@@ -189,7 +383,7 @@ class _ListBuilderState extends State<ListBuilder> {
                                     budgets: [],
                                   ),
                                 ),
-                              );
+                              ).then((_) => _loadData());
                             },
                           ),
                         ],
