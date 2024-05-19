@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:waterup/data/fake_data.dart';
 import 'package:waterup/backend/AddWaterPage.dart';
+
 class WaterHistoryPage extends StatelessWidget {
   const WaterHistoryPage({Key? key});
 
@@ -57,7 +58,7 @@ class WaterHistoryState extends State<WaterHistory> {
             ),
           );
         },
-        backgroundColor: Colors.lightBlue.shade200,
+        backgroundColor: const Color.fromARGB(255, 0, 174, 255),
         elevation: 2.0,
         child: const Icon(Icons.add, size: 35, color: Colors.white),
       ),
@@ -139,74 +140,64 @@ class _ListBuilderState extends State<ListBuilder> {
             ),
           ),
           Expanded(
-            // Use Expanded to allow ListView.builder to occupy remaining space
-            child: ListView.builder(
-              itemCount: entries.length,
-              itemBuilder: (_, int index) {
-                return Column(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(30.0),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: ListView.builder(
+                itemCount: entries.length,
+                itemBuilder: (_, int index) {
+                  return Card(
+                    elevation: 4,
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10.0,
+                        horizontal: 15.0,
                       ),
-                      child: ListTile(
-                        onTap: () => _toggle(index),
-                        title: Text(names[index]),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                deleteTransaction(entries[index].id);
-                                _loadData();
-                              },
-                              icon: const Icon(Icons.delete_forever),
-                              label: const Text("Delete"),
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.red.shade400),
-                                foregroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.white),
-                              ),
-                            ),
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                // Navigate to BudgetScreen with the selected budget data
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => AddWaterScreen(
-                                      transactionData: entries[index].data()
-                                          as Map<String, dynamic>,
-                                      control: true,
-                                      controlDocId: entries[index].id,
-                                      budgets: [], // Pass the budget data to BudgetScreen
-                                    ),
-                                  ),
-                                );
-                              },
-                              icon: const Icon(Icons.edit),
-                              label: const Text("Edit"),
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.green.shade400),
-                                foregroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.white),
-                              ),
-                            ),
-                          ],
+                      onTap: () => _toggle(index),
+                      title: Text(
+                        names[index],
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0,
                         ),
                       ),
+                      trailing: Wrap(
+                        spacing: 10, // Space between buttons
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.delete,
+                                color: Colors.red),
+                            onPressed: () {
+                              deleteTransaction(entries[index].id);
+                              _loadData();
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.edit, color: Colors.green),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AddWaterScreen(
+                                    transactionData: entries[index].data()
+                                        as Map<String, dynamic>,
+                                    control: true,
+                                    controlDocId: entries[index].id,
+                                    budgets: [],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                    SizedBox(height: 10),
-                  ],
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
         ],
