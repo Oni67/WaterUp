@@ -89,56 +89,77 @@ class WaterHistoryState extends State<WaterHistory> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(236, 201, 198, 198),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Map<String, dynamic> defaultData = {
-            'Data do registo': '',
-            'Quantidade de água (mL)': '',
-          };
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddWaterScreen(
-                transactionData: defaultData,
-                control: false,
-                controlDocId: '',
-                budgets: [],
-              ),
-            ),
-          );
-        },
-        backgroundColor: const Color.fromARGB(255, 0, 174, 255),
-        elevation: 2.0,
-        child: const Icon(Icons.add, size: 35, color: Colors.white),
-      ),
-      body: Column(
-        children: [
-          _buildWeekNavigation(),
-          _buildBarChart(),
-          Expanded(
-            child: FutureBuilder<List<DocumentSnapshot>>(
-              future: _listDataFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Text('No data available for this week.');
-                } else {
-                  _selected = List<bool>.filled(snapshot.data!.length, false);
-                  return _buildList(snapshot.data!);
-                }
-              },
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: const Color.fromARGB(236, 201, 198, 198),
+    floatingActionButton: FloatingActionButton(
+      onPressed: () {
+        Map<String, dynamic> defaultData = {
+          'Data do registo': '',
+          'Quantidade de água (mL)': '',
+        };
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AddWaterScreen(
+              transactionData: defaultData,
+              control: false,
+              controlDocId: '',
+              budgets: [],
             ),
           ),
-        ],
-      ),
-    );
-  }
+        );
+      },
+      backgroundColor: const Color.fromARGB(255, 0, 174, 255),
+      elevation: 2.0,
+      child: const Icon(Icons.add, size: 35, color: Colors.white),
+    ),
+    body: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // The missing banner
+        Container(
+          color: Colors.blue, // Set the color of the banner to blue
+          padding: EdgeInsets.symmetric(vertical: 10),
+          child: const Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'WaterUp',
+                style: TextStyle(
+                  color: Colors.white, // Set the text color to white
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Rest of the content
+        _buildWeekNavigation(),
+        _buildBarChart(),
+        Expanded(
+          child: FutureBuilder<List<DocumentSnapshot>>(
+            future: _listDataFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Text('No data available for this week.');
+              } else {
+                _selected = List<bool>.filled(snapshot.data!.length, false);
+                return _buildList(snapshot.data!);
+              }
+            },
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 
   Widget _buildWeekNavigation() {
     return Row(
@@ -191,40 +212,47 @@ class WaterHistoryState extends State<WaterHistory> {
             );
           }).toList();
 
-          return SizedBox(
-            height: 200,
-            child: BarChart(
-              BarChartData(
-                alignment: BarChartAlignment.spaceAround,
-                barGroups: barGroups,
-                titlesData: FlTitlesData(
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      getTitlesWidget: (value, meta) {
-                        final days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-                        return SideTitleWidget(
-                          axisSide: meta.axisSide,
-                          child: Text(days[value.toInt()]),
-                        );
-                      },
+          return Padding(
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),
+            child: SizedBox(
+              height: 200,
+              width: MediaQuery.of(context).size.width - 40,
+              child: BarChart(
+                BarChartData(
+                  alignment: BarChartAlignment.spaceAround,
+                  barGroups: barGroups,
+                  titlesData: FlTitlesData(
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          final days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                          return SideTitleWidget(
+                            axisSide: meta.axisSide,
+                            child: Text(days[value.toInt()]),
+                          );
+                        },
+                      ),
+                    ),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: true),
+                    ),
+                    topTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
                     ),
                   ),
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: true),
+                  borderData: FlBorderData(
+                    show: true,
+                    border: Border.all(color: Colors.grey, width: 1),
                   ),
-                  topTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  rightTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
+                  gridData: FlGridData(show: false),
+                  barTouchData: BarTouchData(
+                    enabled: false,
                   ),
                 ),
-                borderData: FlBorderData(
-                  show: true,
-                  border: Border.all(color: Colors.grey, width: 1),
-                ),
-                gridData: FlGridData(show: false),
               ),
             ),
           );
@@ -306,17 +334,8 @@ class WaterHistoryState extends State<WaterHistory> {
                   icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () => _removeEntry(entry),
                 ),
-                Icon(
-                  _selected[index] ? Icons.check_circle : Icons.radio_button_unchecked,
-                  color: _selected[index] ? Colors.green : Colors.grey,
-                ),
               ],
             ),
-            onTap: () {
-              setState(() {
-                _selected[index] = !_selected[index];
-              });
-            },
           ),
         );
       },
