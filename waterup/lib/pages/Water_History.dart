@@ -95,10 +95,10 @@ class WaterHistoryState extends State<WaterHistory> {
               onSelectionChange: (bool x) {
                 setState(() {});
               },
+              buildWeekNavigation: _buildWeekNavigation(),
+              buildBarChart: _buildBarChart(),
             ),
           ),
-          _buildWeekNavigation(),
-          _buildBarChart(),
         ],
       ),
     );
@@ -144,8 +144,7 @@ class WaterHistoryState extends State<WaterHistory> {
                 width: 22,
                 backDrawRodData: BackgroundBarChartRodData(
                   show: true,
-                  toY:
-                      5000, // Adjust this value to match the maximum expected value
+                  toY: 5000, // Adjust this value to match the maximum expected value
                   color: Colors.grey[300]!,
                 ),
               ),
@@ -165,13 +164,7 @@ class WaterHistoryState extends State<WaterHistory> {
                     showTitles: true,
                     getTitlesWidget: (value, meta) {
                       final days = [
-                        'Mon',
-                        'Tue',
-                        'Wed',
-                        'Thu',
-                        'Fri',
-                        'Sat',
-                        'Sun'
+                        'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'
                       ];
                       return SideTitleWidget(
                         axisSide: meta.axisSide,
@@ -203,17 +196,13 @@ class WaterHistoryState extends State<WaterHistory> {
   }
 
   Future<Map<String, double>> _fetchWeeklyData() async {
-    final startOfWeek =
-        _currentWeek.subtract(Duration(days: _currentWeek.weekday - 1));
+    final startOfWeek = _currentWeek.subtract(Duration(days: _currentWeek.weekday - 1));
     final endOfWeek = startOfWeek.add(const Duration(days: 6));
 
     final querySnapshot = await FirebaseFirestore.instance
-        .collection('water_history')
-        .where('Data do registo',
-            isGreaterThanOrEqualTo:
-                DateFormat('yyyy/MM/dd').format(startOfWeek))
-        .where('Data do registo',
-            isLessThanOrEqualTo: DateFormat('yyyy/MM/dd').format(endOfWeek))
+        .collection('WaterHistory')
+        .where('Data do registo', isGreaterThanOrEqualTo: DateFormat('yyyy/MM/dd').format(startOfWeek))
+        .where('Data do registo', isLessThanOrEqualTo: DateFormat('yyyy/MM/dd').format(endOfWeek))
         .get();
 
     // Initialize all days with 0.0
@@ -268,10 +257,14 @@ class ListBuilder extends StatefulWidget {
     Key? key,
     required this.selectedList,
     required this.onSelectionChange,
+    required this.buildWeekNavigation,
+    required this.buildBarChart,
   }) : super(key: key);
 
   final List<bool> selectedList;
   final ValueChanged<bool>? onSelectionChange;
+  final Widget buildWeekNavigation;
+  final Widget buildBarChart;
 
   @override
   State<ListBuilder> createState() => _ListBuilderState();
@@ -334,6 +327,8 @@ class _ListBuilderState extends State<ListBuilder> {
               ],
             ),
           ),
+          widget.buildWeekNavigation,
+          widget.buildBarChart,
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
