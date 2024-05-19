@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:waterup/data/fake_data.dart';
-import 'package:waterup/pages/start.dart';
-
 class HowToPage extends StatelessWidget {
   const HowToPage({Key? key});
 

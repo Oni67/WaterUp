@@ -2,8 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:waterup/data/fake_data.dart';
 import 'package:waterup/backend/AddWaterPage.dart';
-import 'package:waterup/pages/start.dart';
-
 class WaterHistoryPage extends StatelessWidget {
   const WaterHistoryPage({Key? key});
 

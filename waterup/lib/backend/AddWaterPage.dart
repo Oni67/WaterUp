@@ -1,9 +1,10 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:waterup/pages/Water_History.dart';
 import 'package:waterup/main.dart';
 
 Future<List<DocumentSnapshot>> getWaterHistoryList() async {
@@ -83,6 +84,7 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
 
       update = widget.control;
     } catch (e) {
+      // ignore: avoid_print
       print('Error initializing data: $e');
     }
   }
