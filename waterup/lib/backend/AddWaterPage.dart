@@ -86,62 +86,64 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
   }
 
   Future<void> registerTransaction(String value) async {
-    try {
-      if (value.isEmpty) {
-        throw FirebaseAuthException(code: 'Invalid-Value');
-      }
-
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
-      String currentDate = DateFormat('yyyy/MM/dd').format(DateTime.now());
-
-      DocumentReference transactions = firestore
-          .collection('WaterHistory')
-          .doc(FirebaseAuth.instance.currentUser?.email);
-
-      await transactions.collection('2024').doc().set({
-        'Data do registo': currentDate,
-        'Quantidade de água (mL)': value,
-      });
-
-      await _showSuccessDialog();
-    } catch (e) {
-      errorValueMessage = '';
-      if (e is FirebaseAuthException && e.code == 'Invalid-Value') {
-        errorValueMessage = 'Invalid Value';
-      }
-      log('$e');
-      _setValueError(errorValueMessage);
+  try {
+    if (value.isEmpty) {
+      throw FirebaseAuthException(code: 'Invalid-Value');
     }
+
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    String currentDate = DateFormat('yyyy/MM/dd').format(DateTime.now());
+
+    DocumentReference transactions = firestore
+        .collection('WaterHistory')
+        .doc(FirebaseAuth.instance.currentUser?.email);
+
+    await transactions.collection('2024').doc().set({
+      'Data do registo': currentDate,
+      'Quantidade de água (mL)': value,
+    });
+
+    await _showSuccessDialog();
+    Navigator.pop(context, true); // Pop with a result to indicate success
+  } catch (e) {
+    errorValueMessage = '';
+    if (e is FirebaseAuthException && e.code == 'Invalid-Value') {
+      errorValueMessage = 'Invalid Value';
+    }
+    log('$e');
+    _setValueError(errorValueMessage);
   }
+}
 
   Future<void> updateTransaction(String value) async {
-    try {
-      if (value.isEmpty) {
-        throw FirebaseAuthException(code: 'Invalid-Value');
-      }
-
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
-      String currentDate = DateFormat('yyyy/MM/dd').format(DateTime.now());
-
-      DocumentReference transactions = firestore
-          .collection('WaterHistory')
-          .doc(FirebaseAuth.instance.currentUser?.email);
-
-      await transactions.collection('2024').doc(widget.controlDocId).update({
-        'Data do registo': currentDate,
-        'Quantidade de água (mL)': value,
-      });
-
-      await _showSuccessDialog();
-    } catch (e) {
-      errorValueMessage = '';
-      if (e is FirebaseAuthException && e.code == 'Invalid-Value') {
-        errorValueMessage = 'Invalid Value';
-      }
-      log('$e');
-      _setValueError(errorValueMessage);
+  try {
+    if (value.isEmpty) {
+      throw FirebaseAuthException(code: 'Invalid-Value');
     }
+
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    String currentDate = DateFormat('yyyy/MM/dd').format(DateTime.now());
+
+    DocumentReference transactions = firestore
+        .collection('WaterHistory')
+        .doc(FirebaseAuth.instance.currentUser?.email);
+
+    await transactions.collection('2024').doc(widget.controlDocId).update({
+      'Data do registo': currentDate,
+      'Quantidade de água (mL)': value,
+    });
+
+    await _showSuccessDialog();
+    Navigator.pop(context, true); // Pop with a result to indicate success
+  } catch (e) {
+    errorValueMessage = '';
+    if (e is FirebaseAuthException && e.code == 'Invalid-Value') {
+      errorValueMessage = 'Invalid Value';
+    }
+    log('$e');
+    _setValueError(errorValueMessage);
   }
+}
 
   Future<void> _showSuccessDialog() async {
     await showDialog(
