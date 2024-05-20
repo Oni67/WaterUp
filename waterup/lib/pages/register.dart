@@ -37,7 +37,7 @@ class ThisRegister extends State<Registering> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Image.asset(
-              '../images/logo.png',
+              'images/logo.png',
               width: 350,
               height: 350,
             ),
