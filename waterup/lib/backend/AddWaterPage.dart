@@ -233,13 +233,28 @@ Widget build(BuildContext context) {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: isCustomSelected ? Colors.grey : null,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                elevation: 0,
               ),
-              child: Text('Custom'),
+              child: Text('Custom',
+                style: TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                  color: isCustomSelected ? Colors.white : Colors.black,
+                ),
+              ),
             ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => _selectDate(context),
               child: Text(
+                style: TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                  color: isCustomSelected ? Colors.white : Colors.black,
+                ),
                 _selectedDate == null
                     ? 'Select Date'
                     : 'Date: ${DateFormat('yyyy/MM/dd').format(_selectedDate!)}',
@@ -247,6 +262,13 @@ Widget build(BuildContext context) {
             ),
             SizedBox(height: 20),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isCustomSelected ? Colors.grey : null,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                elevation: 0,
+              ),
               onPressed: () {
                 if (update == false) {
                   registerTransaction(selectedWaterAmount);
@@ -274,15 +296,23 @@ Widget _buildWaterButton(String amount) {
         });
       },
       style: ElevatedButton.styleFrom(
-        primary: selectedWaterAmount == amount && !isCustomSelected ? Colors.grey : null,
+        backgroundColor: selectedWaterAmount == amount && !isCustomSelected ? Colors.grey : null,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        elevation: 0,
       ),
-      child: Text('$amount mL'),
+      child: Text(
+        '$amount mL',
+        style: TextStyle(
+          fontSize: 16.0,
+          fontWeight: FontWeight.bold,
+          color: selectedWaterAmount == amount && !isCustomSelected ? Colors.white : Colors.black,
+        ),
+      ),
     ),
   );
 }
-
-
-
 
 
   Future<List<String>> fetchBudgetsFromFirebase() async {
