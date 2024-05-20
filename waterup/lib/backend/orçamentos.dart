@@ -87,8 +87,8 @@ Future<Map<String,int>> getWaterHistoryByDate(String date) async {
         if(document['Data do registo'] == date){
           temp = document['Quantidade de água (mL)'];
           tempInt += int.parse(temp);
+          transactions[document['Data do registo']] = tempInt;
         }
-        transactions[document['Data do registo']] = tempInt;
       }
   log('Transactions: $transactions');
   return transactions;
