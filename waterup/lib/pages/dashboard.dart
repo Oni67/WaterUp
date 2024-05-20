@@ -1,9 +1,9 @@
-import 'package:waterup/components/circularmeter.dart';
+import 'package:waterup/components/watermeter.dart';
 import 'package:waterup/components/motivationalmessages.dart';
 import 'package:waterup/components/tipofday.dart';
 import 'package:flutter/material.dart';
 import 'package:waterup/pages/start.dart';
-import 'package:waterup/backend/orçamentos.dart';
+import 'package:waterup/backend/dashboardbackend.dart';
 import 'package:intl/intl.dart';
 
 class Dashboard extends StatelessWidget {
