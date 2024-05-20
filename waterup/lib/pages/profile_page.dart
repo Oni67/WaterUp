@@ -50,7 +50,7 @@ class _ProfileFormState extends State<ProfileForm> {
           _nameController.text = snapshot.data()!['Name'] ?? '';
           _emailController.text = snapshot.data()!['Email'] ?? '';
           _dobController.text = snapshot.data()!['Date Of Birth'] ?? '';
-          exerciseFrequency =
+          exercise =
               snapshot.data()!['Exercise Frequency'] ?? 'No exercise';
           weight = (snapshot.data()!['Weight'] ?? 70).toDouble();
           height = (snapshot.data()!['Height'] ?? 170).toDouble();
