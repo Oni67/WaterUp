@@ -197,106 +197,114 @@ class WaterHistoryState extends State<WaterHistory> {
   }
 
   Widget _buildBarChart() {
-    return FutureBuilder<Map<String, double>>(
-      future: _weeklyDataFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Text('No data available for this week.');
-        } else {
-          final data = snapshot.data!;
-          final barGroups = data.entries.map((entry) {
-            int dayIndex = _getDayIndex(entry.key);
-            return BarChartGroupData(
-              x: dayIndex,
-              barRods: [
-                BarChartRodData(
-                  toY: entry.value,
-                  color: Colors.blue,
-                  width: 22,
-                  backDrawRodData: BackgroundBarChartRodData(
-                    show: true,
-                    toY: 5000,
-                    color: Colors.grey[300]!,
-                  ),
+  return FutureBuilder<Map<String, double>>(
+    future: _weeklyDataFuture,
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const CircularProgressIndicator();
+      } else if (snapshot.hasError) {
+        return Text('Error: ${snapshot.error}');
+      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+        return const Text('No data available for this week.');
+      } else {
+        final data = snapshot.data!;
+        final barGroups = data.entries.map((entry) {
+          int dayIndex = _getDayIndex(entry.key);
+          return BarChartGroupData(
+            x: dayIndex,
+            barRods: [
+              BarChartRodData(
+                toY: entry.value,
+                color: Colors.blue,
+                width: 22,
+                backDrawRodData: BackgroundBarChartRodData(
+                  show: true,
+                  toY: 5000,
+                  color: Colors.grey[300]!,
                 ),
-              ],
-            );
-          }).toList();
+              ),
+            ],
+          );
+        }).toList();
 
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-            child: SizedBox(
-              height: 200,
-              child: BarChart(
-                BarChartData(
-                  alignment: BarChartAlignment.spaceAround,
-                  barGroups: barGroups,
-                  titlesData: FlTitlesData(
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) {
-                          final days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+          child: SizedBox(
+            height: 200,
+            child: BarChart(
+              BarChartData(
+                alignment: BarChartAlignment.spaceAround,
+                barGroups: barGroups,
+                titlesData: FlTitlesData(
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      getTitlesWidget: (value, meta) {
+                        final days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                        return SideTitleWidget(
+                          axisSide: meta.axisSide,
+                          child: Text(days[value.toInt()]),
+                        );
+                      },
+                    ),
+                  ),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 40,
+                      getTitlesWidget: (value, meta) {
+                        if (value % 1000 == 0) {
                           return SideTitleWidget(
                             axisSide: meta.axisSide,
-                            child: Text(days[value.toInt()]),
+                            space: 8,
+                            child: Text('${value ~/ 1000}k', style: const TextStyle(fontSize: 12)),
                           );
-                        },
-                      ),
-                    ),
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 40,
-                        getTitlesWidget: (value, meta) {
-                          if (value % 1000 == 0) {
-                            return SideTitleWidget(
-                              axisSide: meta.axisSide,
-                              space: 8,
-                              child: Text('${value ~/ 1000}k', style: const TextStyle(fontSize: 12)),
-                            );
-                          }
-                          return Container();
-                        },
-                      ),
-                    ),
-                    topTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    rightTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
+                        }
+                        return Container();
+                      },
                     ),
                   ),
-                  borderData: FlBorderData(
-                    show: true,
-                    border: Border.all(color: Colors.grey, width: 1),
+                  topTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
                   ),
-                  gridData: FlGridData(show: false),
-                  barTouchData: BarTouchData(
-                    enabled: true,
-                    touchCallback: (FlTouchEvent event, barTouchResponse) {
-                      if (event.isInterestedForInteractions &&
-                          barTouchResponse != null &&
-                          barTouchResponse.spot != null) {
-                        final tappedGroup = barTouchResponse.spot!.touchedBarGroup;
-                        final day = _getDayName(tappedGroup.x.toInt());
-                        final amount = tappedGroup.barRods[0].toY;
-                        _showDayData(day, amount);
-                      }
-                    },
+                  rightTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
                   ),
+                ),
+                borderData: FlBorderData(
+                  show: true,
+                  border: Border.all(color: Colors.grey, width: 1),
+                ),
+                gridData: FlGridData(show: false),
+                barTouchData: BarTouchData(
+                  enabled: true,
+                  touchTooltipData: BarTouchTooltipData(
+                    tooltipBgColor: Colors.transparent,
+                    tooltipPadding: EdgeInsets.zero,
+                    tooltipMargin: 0,
+                    getTooltipItem: (group, groupIndex, rod, rodIndex) => null,
+                  ),
+                  touchCallback: (FlTouchEvent event, barTouchResponse) {
+                    if (event is FlTapUpEvent &&
+                        barTouchResponse != null &&
+                        barTouchResponse.spot != null) {
+                      final tappedGroup = barTouchResponse.spot!.touchedBarGroup;
+                      final day = _getDayName(tappedGroup.x.toInt());
+                      final amount = tappedGroup.barRods[0].toY;
+                      _showDayData(day, amount);
+                    }
+                  },
+                  touchExtraThreshold: EdgeInsets.symmetric(horizontal: 10),
                 ),
               ),
             ),
-          );
-        }
-      },
-    );
-  }
+          ),
+        );
+      }
+    },
+  );
+}
+
 
   Future<Map<String, double>> _fetchWeeklyData() async {
     final startOfWeek = _currentWeek.subtract(Duration(days: _currentWeek.weekday - 1));
