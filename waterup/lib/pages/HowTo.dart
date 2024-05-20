@@ -41,7 +41,7 @@ class BudgetingState extends State<HowTo> {
     'This is where you are! Here, you can get help on how to use the app.',
     'In the Profile menu, you can edit all your information, which we will use to determine how much water you should drink each day.',
     'You can find the logout button in the top left corner of the Home menu.',
-    'To register your Water intake, you must navigate to the Add Water menu and press the "+" icon',
+    'To register your Water intake, you must navigate to the Add Water menu and press the "+" icon.',
     'To view your intake history, you must navigate to the Add Water menu and navigate through the calendar at the top and view the weekly graph.',
     'To edit or delete water history, you must navigate to the Add Water menu and navigate through the calendar at the top to select the desired week and edit or delete the entries that will appear below the graph.',
     'All the information we request in the Profile menu is used to calculate your ideal water intake for each day.',
