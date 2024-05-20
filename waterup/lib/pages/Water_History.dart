@@ -262,48 +262,55 @@ Widget build(BuildContext context) {
   }
 
   Future<Map<String, double>> _fetchWeeklyData() async {
-    final startOfWeek = _currentWeek.subtract(Duration(days: _currentWeek.weekday - 1));
-    final endOfWeek = startOfWeek.add(const Duration(days: 6));
+  final startOfWeek = _currentWeek.subtract(Duration(days: _currentWeek.weekday - 1));
+  final endOfWeek = startOfWeek.add(const Duration(days: 6));
 
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('WaterHistory')
-        .doc(FirebaseAuth.instance.currentUser?.email)
-        .collection('2024')
-        .get();
+  final querySnapshot = await FirebaseFirestore.instance
+      .collection('WaterHistory')
+      .doc(FirebaseAuth.instance.currentUser?.email)
+      .collection('2024')
+      .where('Data do registo', isGreaterThanOrEqualTo: DateFormat('yyyy/MM/dd').format(startOfWeek))
+      .where('Data do registo', isLessThanOrEqualTo: DateFormat('yyyy/MM/dd').format(endOfWeek))
+      .get();
 
-    final data = {
-      'Mon': 0.0,
-      'Tue': 0.0,
-      'Wed': 0.0,
-      'Thu': 0.0,
-      'Fri': 0.0,
-      'Sat': 0.0,
-      'Sun': 0.0,
-    };
+  final data = {
+    'Mon': 0.0,
+    'Tue': 0.0,
+    'Wed': 0.0,
+    'Thu': 0.0,
+    'Fri': 0.0,
+    'Sat': 0.0,
+    'Sun': 0.0,
+  };
 
-    for (var doc in querySnapshot.docs) {
-      final dateString = doc['Data do registo'];
-      final date = DateFormat('yyyy/MM/dd').parse(dateString);
-      final day = DateFormat('EEE').format(date);
-      final quantityString = doc['Quantidade de água (mL)'];
-      final quantity = double.tryParse(quantityString) ?? 0.0;
+  for (var doc in querySnapshot.docs) {
+    final dateString = doc['Data do registo'];
+    final date = DateFormat('yyyy/MM/dd').parse(dateString);
+    final day = DateFormat('EEE').format(date);
+    final quantityString = doc['Quantidade de água (mL)'];
+    final quantity = double.tryParse(quantityString) ?? 0.0;
 
-      if (data.containsKey(day)) {
-        data[day] = data[day]! + quantity;
-      }
+    if (data.containsKey(day)) {
+      data[day] = data[day]! + quantity;
     }
-
-    return data;
   }
+
+  return data;
+}
 
   Future<List<DocumentSnapshot>> _fetchListData() async {
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('WaterHistory')
-        .doc(FirebaseAuth.instance.currentUser?.email)
-        .collection('2024')
-        .get();
-    return querySnapshot.docs;
-  }
+  final startOfWeek = _currentWeek.subtract(Duration(days: _currentWeek.weekday - 1));
+  final endOfWeek = startOfWeek.add(const Duration(days: 6));
+
+  final querySnapshot = await FirebaseFirestore.instance
+      .collection('WaterHistory')
+      .doc(FirebaseAuth.instance.currentUser?.email)
+      .collection('2024')
+      .where('Data do registo', isGreaterThanOrEqualTo: DateFormat('yyyy/MM/dd').format(startOfWeek))
+      .where('Data do registo', isLessThanOrEqualTo: DateFormat('yyyy/MM/dd').format(endOfWeek))
+      .get();
+  return querySnapshot.docs;
+}
 
   Widget _buildList(List<DocumentSnapshot> entries) {
     return ListView.builder(
