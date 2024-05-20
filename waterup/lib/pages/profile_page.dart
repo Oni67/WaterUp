@@ -23,13 +23,14 @@ class _ProfileFormState extends State<ProfileForm> {
   String exerciseFrequency = 'No exercise';
   double weight = 70.0; // default weight
   double height = 170.0; // default height
+  String exercise = ""; // Define exercise variable at the class level
 
-  final List<String> exerciseOptions = [
+  List<String> exerciseOptions = [
     'No exercise',
-    '1-2 days a week',
-    '3-4 days a week',
-    '5-6 days a week',
-    'Every day',
+    'Light exercise (1-3 days per week)',
+    'Moderate exercise (3-5 days per week)',
+    'Heavy exercise (6-7 days per week)',
+    'Very heavy exercise (twice per day, extra heavy workouts)'
   ];
 
   @override
@@ -130,7 +131,7 @@ class _ProfileFormState extends State<ProfileForm> {
         'Name': name,
         'Email': email,
         'Date Of Birth': dob,
-        'Exercise Frequency': exerciseFrequency,
+        'Exercise Frequency': exercise,
         'Weight': weight,
         'Height': height,
       });
@@ -145,20 +146,19 @@ class _ProfileFormState extends State<ProfileForm> {
       );
     }
   }
-
   double calculateWaterIntake() {
     double waterIntake = weight * 0.033;
-    switch (exerciseFrequency) {
-      case '1-2 days a week':
+    switch (exercise) {
+      case 'Light exercise (1-3 days per week)':
         waterIntake += 0.5;
         break;
-      case '3-4 days a week':
+      case 'Moderate exercise (3-5 days per week)':
         waterIntake += 1.0;
         break;
-      case '5-6 days a week':
+      case 'Heavy exercise (6-7 days per week)':
         waterIntake += 1.5;
         break;
-      case 'Every day':
+      case 'Very heavy exercise (twice per day, extra heavy workouts)':
         waterIntake += 2.0;
         break;
     }
@@ -201,7 +201,13 @@ class _ProfileFormState extends State<ProfileForm> {
                     tempWeight = index + 30; // Adjust to your minimum value
                   },
                   children: List<Widget>.generate(121, (int index) {
-                    return Center(child: Text('${index + 30} kg',style: TextStyle(color: tempWeight == index + 30 ? Colors.blue : Colors.black,)));
+                    return Center(
+                        child: Text('${index + 30} kg',
+                            style: TextStyle(
+                              color: tempWeight == index + 30
+                                  ? Colors.blue
+                                  : Colors.black,
+                            )));
                   }),
                 ),
               ),
@@ -249,7 +255,70 @@ class _ProfileFormState extends State<ProfileForm> {
                     tempHeight = index + 100; // Adjust to your minimum value
                   },
                   children: List<Widget>.generate(121, (int index) {
-                    return Center(child: Text('${index + 100} cm', style: TextStyle(color: tempHeight == index + 100 ? Colors.blue : Colors.black,)));
+                    return Center(
+                        child: Text('${index + 100} cm',
+                            style: TextStyle(
+                              color: tempHeight == index + 100
+                                  ? Colors.blue
+                                  : Colors.black,
+                            )));
+                  }),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showExercisePicker(BuildContext context) {
+    String tempExercise = exerciseOptions.first;
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 200.0,
+          color: Colors.white, // Set background color
+          child: Column(
+            children: [
+              Container(
+                height: 32.0,
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextButton(
+                  onPressed: () {
+                    setState(() {
+                      exercise = tempExercise;
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    'Done',
+                    style: TextStyle(
+                      color: Colors.blue, // Button text color
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: CupertinoPicker(
+                  itemExtent: 32.0,
+                  onSelectedItemChanged: (int index) {
+                    tempExercise = exerciseOptions[index];
+                  },
+                  children: List<Widget>.generate(exerciseOptions.length,
+                      (int index) {
+                    return Center(
+                      child: Text(
+                        exerciseOptions[index],
+                        style: TextStyle(
+                          color: tempExercise == exerciseOptions[index]
+                              ? Colors.blue
+                              : Colors.black,
+                        ),
+                      ),
+                    );
                   }),
                 ),
               ),
@@ -317,20 +386,10 @@ class _ProfileFormState extends State<ProfileForm> {
               ),
             ),
             SizedBox(height: 16.0),
-            DropdownButton<String>(
-              value: exerciseFrequency,
-              onChanged: (String? newValue) {
-                setState(() {
-                  exerciseFrequency = newValue!;
-                });
-              },
-              items:
-                  exerciseOptions.map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
+            ListTile(
+              title: Text('Exercise Frequency: ${exercise}'),
+              trailing: Icon(Icons.edit),
+              onTap: () => _showExercisePicker(context),
             ),
             SizedBox(height: 16.0),
             ListTile(
