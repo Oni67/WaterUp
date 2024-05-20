@@ -126,6 +126,7 @@ class _ProfileFormState extends State<ProfileForm> {
       String name = _nameController.text;
       String email = _emailController.text;
       String dob = _dobController.text;
+      String intake = calculateWaterIntake().toStringAsFixed(2);
 
       await FirebaseFirestore.instance.collection('users').doc(uid).set({
         'Name': name,
@@ -134,6 +135,7 @@ class _ProfileFormState extends State<ProfileForm> {
         'Exercise Frequency': exercise,
         'Weight': weight,
         'Height': height,
+        'Intake': intake,
       });
 
       ScaffoldMessenger.of(context).showSnackBar(

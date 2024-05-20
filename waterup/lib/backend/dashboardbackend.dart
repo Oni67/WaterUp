@@ -31,9 +31,38 @@ Future<Map<String, int>> getWaterHistoryByDate(String date) async {
   }
 }
 
+Future<double> getWaterIntakeOfUser() async {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  try {
+    DocumentReference documentTransaction = firestore
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser?.uid);
+
+    DocumentSnapshot documentSnapshot = await documentTransaction.get();
+
+    if (documentSnapshot.exists) {
+      Map<String, dynamic>? data = documentSnapshot.data() as Map<String, dynamic>?;
+      if (data != null && data.containsKey('Intake')) {
+        log('Intake ${data['Intake']}');
+        return double.parse(data['Intake']);
+      } else {
+        log('Intake field is missing in the document');
+        return 2;
+      }
+    } else {
+      log('Document does not exist');
+      return 2; 
+    }
+  } catch (e) {
+    log('Error getting user list: $e');
+    return 2;
+  }
+}
+
 Future<List<double>> calculatePercentage(String date) async {
   try {
-    int max = 2000;
+    double max = await getWaterIntakeOfUser() * 1000;
+    log('max$max');
     double percent = 100;
     double temp = 0;
     Map<String, int> current = await getWaterHistoryByDate(date);

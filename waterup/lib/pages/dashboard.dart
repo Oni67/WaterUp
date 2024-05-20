@@ -27,6 +27,7 @@ class GraphComponent extends State<Graph> {
   List<String> listContents = [];
   List<double> percentages = [0, 100];
   double water = 0;
+  double intake = 2;
   Map<String, int> temp = {};
   bool _dataLoaded = false;
 
@@ -88,7 +89,7 @@ class GraphComponent extends State<Graph> {
                     child: Padding(
                       padding: const EdgeInsets.all(20.0),
                       child: Text(
-                        'Daily Goal\n$water L / 2 L',
+                        'Daily Goal\n$water L / $intake L',
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
@@ -131,11 +132,13 @@ class GraphComponent extends State<Graph> {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyy/MM/dd').format(now);
     Map<String, int> current = await getWaterHistoryByDate(formattedDate);
+    double tempIntake = await getWaterIntakeOfUser();
     for (int i in current.values) {
       temp += i;
     }
     setState(() {
       water = temp / 1000;
+      intake = tempIntake;
     });
   }
 }
