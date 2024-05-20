@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+
 class HowToPage extends StatelessWidget {
-  const HowToPage({Key? key});
+  const HowToPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +12,7 @@ class HowToPage extends StatelessWidget {
 }
 
 class HowTo extends StatefulWidget {
-  const HowTo({Key? key});
+  const HowTo({Key? key}) : super(key: key);
 
   @override
   BudgetingState createState() => BudgetingState();
@@ -76,13 +77,13 @@ class BudgetingState extends State<HowTo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(236, 201, 198, 198),
+      backgroundColor: const Color.fromARGB(236, 201, 198, 198),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
             color: Colors.blue, // Set the color of the banner to blue
-            padding: EdgeInsets.symmetric(vertical: 10),
+            padding: const EdgeInsets.symmetric(vertical: 10),
             child: const Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -97,13 +98,24 @@ class BudgetingState extends State<HowTo> {
               ],
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0, bottom: 8.0),
+            child: const Text(
+              'How To:',
+              style: TextStyle(
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.bold,
+                fontSize: 28.0, // Increase the font size
+              ),
+            ),
+          ),
           Expanded(
             child: ListView.builder(
               itemCount: 20,
               itemBuilder: (context, index) {
                 return Column(
                   children: [
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10), // Reduce space between items
                     SizedBox(
                       width: 500, // Same width as the buttons
                       child: ElevatedButton(
@@ -111,7 +123,7 @@ class BudgetingState extends State<HowTo> {
                           foregroundColor:
                               MaterialStateProperty.all<Color>(Colors.white),
                           backgroundColor: MaterialStateProperty.all<Color>(
-                              Color.fromARGB(255, 25, 164, 206)),
+                              const Color.fromARGB(255, 25, 164, 206)),
                         ),
                         onPressed: () {
                           setState(() {
@@ -146,7 +158,7 @@ class BudgetingState extends State<HowTo> {
                         onClose: () =>
                             setState(() => _showExplanationList[index] = false),
                       ),
-                    const SizedBox(height: 15), // Add space between buttons
+                    const SizedBox(height: 10), // Reduce space between buttons
                   ],
                 );
               },
