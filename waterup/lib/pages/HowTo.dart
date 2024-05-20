@@ -31,7 +31,7 @@ class BudgetingState extends State<HowTo> {
     'How do I register water intake?',
     'How do I view Intake history?',
     'How do I edit or delete my water history?',
-    'Why does my profile require all this information?',
+    'Why does my profile \nrequire all this information?',
   ];
 
   // Messages for each index
@@ -76,9 +76,9 @@ class BudgetingState extends State<HowTo> {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0, bottom: 8.0),
-            child: const Text(
+          const Padding(
+            padding: EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0, bottom: 8.0),
+            child: Text(
               'How To:',
               style: TextStyle(
                 fontStyle: FontStyle.italic,
