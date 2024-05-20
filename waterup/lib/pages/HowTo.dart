@@ -31,7 +31,7 @@ class BudgetingState extends State<HowTo> {
     'How do I register water intake?',
     'How do I view Intake history?',
     'How do I edit or delete my water history?',
-    'Why does my profile \nrequire all this information?',
+    'Why does my profile require this information?',
   ];
 
   // Messages for each index
