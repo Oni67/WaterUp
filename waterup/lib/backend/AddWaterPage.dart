@@ -232,7 +232,7 @@ Widget build(BuildContext context) {
                 }
               },
               style: ElevatedButton.styleFrom(
-                primary: isCustomSelected ? Colors.grey : null,
+                backgroundColor: isCustomSelected ? Colors.grey : null,
               ),
               child: Text('Custom'),
             ),
