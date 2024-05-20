@@ -217,9 +217,10 @@ class WaterHistoryState extends State<WaterHistory> {
                 toY: entry.value,
                 color: Colors.blue,
                 width: 22,
+                borderRadius: BorderRadius.circular(0),
                 backDrawRodData: BackgroundBarChartRodData(
                   show: true,
-                  toY: 5000,
+                  toY: 3000, // Adjusting the maximum y-value
                   color: Colors.grey[300]!,
                 ),
               ),
@@ -253,11 +254,11 @@ class WaterHistoryState extends State<WaterHistory> {
                       showTitles: true,
                       reservedSize: 40,
                       getTitlesWidget: (value, meta) {
-                        if (value % 1000 == 0) {
+                        if (value % 200 == 0) { // Adjusting the interval for y-axis labels
                           return SideTitleWidget(
                             axisSide: meta.axisSide,
                             space: 8,
-                            child: Text('${value ~/ 1000}k', style: const TextStyle(fontSize: 12)),
+                            child: Text('${value.toInt()}', style: const TextStyle(fontSize: 12)),
                           );
                         }
                         return Container();
@@ -304,7 +305,6 @@ class WaterHistoryState extends State<WaterHistory> {
     },
   );
 }
-
 
   Future<Map<String, double>> _fetchWeeklyData() async {
     final startOfWeek = _currentWeek.subtract(Duration(days: _currentWeek.weekday - 1));
