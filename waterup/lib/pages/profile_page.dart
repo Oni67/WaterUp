@@ -178,7 +178,7 @@ class _ProfileFormState extends State<ProfileForm> {
               Container(
                 height: 32.0,
                 alignment: Alignment.centerRight,
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: TextButton(
                   onPressed: () {
                     setState(() {
@@ -186,7 +186,7 @@ class _ProfileFormState extends State<ProfileForm> {
                     });
                     Navigator.of(context).pop();
                   },
-                  child: Text(
+                  child: const Text(
                     'Done',
                     style: TextStyle(
                       color: Colors.blue, // Button text color
@@ -239,7 +239,7 @@ class _ProfileFormState extends State<ProfileForm> {
                     });
                     Navigator.of(context).pop();
                   },
-                  child: Text(
+                  child: const Text(
                     'Done',
                     style: TextStyle(
                       color: Colors.blue, // Button text color
@@ -293,7 +293,7 @@ class _ProfileFormState extends State<ProfileForm> {
                     });
                     Navigator.of(context).pop();
                   },
-                  child: Text(
+                  child: const Text(
                     'Done',
                     style: TextStyle(
                       color: Colors.blue, // Button text color
@@ -332,7 +332,7 @@ class _ProfileFormState extends State<ProfileForm> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -342,7 +342,7 @@ class _ProfileFormState extends State<ProfileForm> {
               child: Container(
                 width: 100,
                 height: 100,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.grey, // Placeholder color
                 ),
@@ -356,7 +356,7 @@ class _ProfileFormState extends State<ProfileForm> {
                     : Icon(Icons.person, size: 50), // Placeholder icon
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             TextField(
               controller: _nameController,
               decoration: const InputDecoration(
@@ -364,7 +364,7 @@ class _ProfileFormState extends State<ProfileForm> {
                 border: OutlineInputBorder(), // Add border to text field
               ),
             ),
-            SizedBox(height: 16.0), // Add spacing between fields
+            const SizedBox(height: 16.0), // Add spacing between fields
             TextField(
               controller: _emailController,
               decoration: const InputDecoration(
@@ -372,7 +372,7 @@ class _ProfileFormState extends State<ProfileForm> {
                 border: OutlineInputBorder(), // Add border to text field
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             InkWell(
               onTap: _selectDate,
               child: IgnorePointer(
@@ -385,13 +385,13 @@ class _ProfileFormState extends State<ProfileForm> {
                 ),
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             ListTile(
               title: Text('Exercise Frequency: ${exercise}'),
               trailing: Icon(Icons.edit),
               onTap: () => _showExercisePicker(context),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             ListTile(
               title: Text('Weight: ${weight.toStringAsFixed(1)} kg'),
               trailing: Icon(Icons.edit),
@@ -402,7 +402,7 @@ class _ProfileFormState extends State<ProfileForm> {
               trailing: Icon(Icons.edit),
               onTap: () => _showHeightPicker(context),
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             Center(
               child: ElevatedButton(
                 onPressed: _saveProfileData,
@@ -413,7 +413,7 @@ class _ProfileFormState extends State<ProfileForm> {
                 child: const Text('Save Profile'),
               ),
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             Center(
               child: Text(
                 'Recommended Water Intake: ${calculateWaterIntake().toStringAsFixed(2)} liters/day',
