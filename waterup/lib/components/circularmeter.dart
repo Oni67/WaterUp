@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 
 class WaterProgressBar extends StatelessWidget {
@@ -78,7 +79,7 @@ class _WaterProgressBarPainter extends CustomPainter {
     // Bottom line
     canvas.drawLine(
       Offset(centerX - (barWidth + 15) / 2, centerY),
-      Offset(centerX + (barWidth + 15)/ 2, centerY),
+      Offset(centerX + (barWidth + 15) / 2, centerY),
       linePaint,
     );
 
@@ -93,16 +94,30 @@ class _WaterProgressBarPainter extends CustomPainter {
       bgPaint,
     );
 
-    // Water rectangle
-    canvas.drawRect(
-      Rect.fromLTWH(
-        centerX - barWidth / 2,
-        centerY - barHeight,
-        barWidth,
-        barHeight,
-      ),
-      fillPaint,
-    );
+    // Water with wave effect
+    if (progress > 0 && progress < 99) {
+      Path wavePath = Path();
+      wavePath.moveTo(centerX - barWidth / 2, centerY - barHeight);
+      wavePath.quadraticBezierTo(
+          centerX - barWidth / 4, centerY - barHeight - 20, centerX, centerY - barHeight);
+      wavePath.quadraticBezierTo(
+          centerX + barWidth / 4, centerY - barHeight + 20, centerX + barWidth / 2, centerY - barHeight);
+      wavePath.lineTo(centerX + barWidth / 2, centerY);
+      wavePath.lineTo(centerX - barWidth / 2, centerY);
+      wavePath.close();
+
+      canvas.drawPath(wavePath, fillPaint);
+    } else if (progress >= 99) {
+      canvas.drawRect(
+        Rect.fromLTWH(
+          centerX - barWidth / 2,
+          centerY - barHeight,
+          barWidth,
+          centerY,
+        ),
+        fillPaint,
+      );
+    }
 
     // Text
     TextSpan span = TextSpan(
@@ -119,7 +134,7 @@ class _WaterProgressBarPainter extends CustomPainter {
     tp.layout();
     tp.paint(
       canvas,
-      Offset(centerX - tp.width / 2, centerY - barHeight - tp.height),
+      Offset(centerX - tp.width / 2, centerY - barHeight - tp.height - 10),
     );
   }
 
