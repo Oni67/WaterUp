@@ -44,6 +44,7 @@ class _AddWaterScreenState extends State<AddWaterScreen> {
 
       setState(() {
         widget.budgets = fetchedBudgets;
+        _selectedDate = DateTime.now();
       });
 
       if (widget.transactionData != null) {
