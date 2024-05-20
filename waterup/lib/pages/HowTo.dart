@@ -19,54 +19,32 @@ class HowTo extends StatefulWidget {
 }
 
 class BudgetingState extends State<HowTo> {
-  final List<bool> _showExplanationList = List.generate(20, (index) => false);
+  final List<bool> _showExplanationList = List.generate(9, (index) => false);
 
   // Button texts for each index
   List<String> buttonTexts = [
-    'The first how to goes here',
-    'Button 2',
-    'Button 3',
-    'Button 4',
-    'Button 5',
-    'Button 6',
-    'Button 7',
-    'Button 8',
-    'Button 9',
-    'Button 10',
-    'Button 11',
-    'Button 12',
-    'Button 13',
-    'Button 14',
-    'Button 15',
-    'Button 16',
-    'Button 17',
-    'Button 18',
-    'Button 19',
-    'Button 20',
+    'Home',
+    'Add Water',
+    'How to',
+    'Profile',
+    'How do I log out?',
+    'How do I register water intake?',
+    'How do I view Intake history?',
+    'How do I edit or delete my water history?',
+    'Why does my profile require all this information?',
   ];
 
   // Messages for each index
   List<String> messages = [
-    'The explanation of it goes here',
-    'Message 2',
-    'Message 3',
-    'Message 4',
-    'Message 5',
-    'Message 6',
-    'Message 7',
-    'Message 8',
-    'Message 9',
-    'Message 10',
-    'Message 11',
-    'Message 12',
-    'Message 13',
-    'Message 14',
-    'Message 15',
-    'Message 16',
-    'Message 17',
-    'Message 18',
-    'Message 19',
-    'Message 20',
+    "In the Home menu, you can view your progress on today's water goal and logout from the application.",
+    'In the Add Water menu, you can register your water intake and view your drinking history.',
+    'This is where you are! Here, you can get help on how to use the app.',
+    'In the Profile menu, you can edit all your information, which we will use to determine how much water you should drink each day.',
+    'You can find the logout button in the top left corner of the Home menu.',
+    'To register your Water intake, you must navigate to the Add Water menu and press the "+" icon',
+    'To view your intake history, you must navigate to the Add Water menu and navigate through the calendar at the top and view the weekly graph.',
+    'To edit or delete water history, you must navigate to the Add Water menu and navigate through the calendar at the top to select the desired week and edit or delete the entries that will appear below the graph.',
+    'All the information we request in the Profile menu is used to calculate your ideal water intake for each day.',
   ];
 
   @override
@@ -111,7 +89,7 @@ class BudgetingState extends State<HowTo> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: 20,
+              itemCount: 9,
               itemBuilder: (context, index) {
                 return Column(
                   children: [
