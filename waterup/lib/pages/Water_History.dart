@@ -26,7 +26,6 @@ class WaterHistory extends StatefulWidget {
 class WaterHistoryState extends State<WaterHistory> {
   late Future<Map<String, double>> _weeklyDataFuture;
   late Future<List<DocumentSnapshot>> _listDataFuture;
-  late List<bool> _selected;
   late DateTime _currentWeek;
 
   @override
@@ -88,78 +87,94 @@ class WaterHistoryState extends State<WaterHistory> {
     });
   }
 
-  @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: const Color.fromARGB(236, 201, 198, 198),
-    floatingActionButton: FloatingActionButton(
-      onPressed: () {
-        Map<String, dynamic> defaultData = {
-          'Data do registo': '',
-          'Quantidade de água (mL)': '',
-        };
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AddWaterScreen(
-              transactionData: defaultData,
-              control: false,
-              controlDocId: '',
-              budgets: [],
+  void _showDayData(String day, double amount) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Water Intake on $day'),
+          content: Text('You drank ${amount.toStringAsFixed(2)} mL of water.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
             ),
-          ),
+          ],
         );
       },
-      backgroundColor: const Color.fromARGB(255, 0, 174, 255),
-      elevation: 2.0,
-      child: const Icon(Icons.add, size: 35, color: Colors.white),
-    ),
-    body: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        // The missing banner
-        Container(
-          color: Colors.blue, // Set the color of the banner to blue
-          padding: EdgeInsets.symmetric(vertical: 10),
-          child: const Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'WaterUp',
-                style: TextStyle(
-                  color: Colors.white, // Set the text color to white
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20.0,
-                ),
-              ),
-            ],
-          ),
-        ),
-        // Rest of the content
-        _buildWeekNavigation(),
-        _buildBarChart(),
-        Expanded(
-          child: FutureBuilder<List<DocumentSnapshot>>(
-            future: _listDataFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              } else if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}');
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Text('No data available for this week.');
-              } else {
-                _selected = List<bool>.filled(snapshot.data!.length, false);
-                return _buildList(snapshot.data!);
-              }
-            },
-          ),
-        ),
-      ],
-    ),
-  );
-}
+    );
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(236, 201, 198, 198),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Map<String, dynamic> defaultData = {
+            'Data do registo': '',
+            'Quantidade de água (mL)': '',
+          };
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddWaterScreen(
+                transactionData: defaultData,
+                control: false,
+                controlDocId: '',
+                budgets: [],
+              ),
+            ),
+          );
+        },
+        backgroundColor: const Color.fromARGB(255, 0, 174, 255),
+        elevation: 2.0,
+        child: const Icon(Icons.add, size: 35, color: Colors.white),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // The missing banner
+          Container(
+            color: Colors.blue, // Set the color of the banner to blue
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: const Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'WaterUp',
+                  style: TextStyle(
+                    color: Colors.white, // Set the text color to white
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Rest of the content
+          _buildWeekNavigation(),
+          _buildBarChart(),
+          Expanded(
+            child: FutureBuilder<List<DocumentSnapshot>>(
+              future: _listDataFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Text('No data available for this week.');
+                } else {
+                  return _buildList(snapshot.data!);
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildWeekNavigation() {
     return Row(
@@ -213,10 +228,9 @@ Widget build(BuildContext context) {
           }).toList();
 
           return Padding(
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),
+            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
             child: SizedBox(
               height: 200,
-              width: MediaQuery.of(context).size.width - 40,
               child: BarChart(
                 BarChartData(
                   alignment: BarChartAlignment.spaceAround,
@@ -235,7 +249,20 @@ Widget build(BuildContext context) {
                       ),
                     ),
                     leftTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: true),
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 40,
+                        getTitlesWidget: (value, meta) {
+                          if (value % 1000 == 0) {
+                            return SideTitleWidget(
+                              axisSide: meta.axisSide,
+                              space: 8,
+                              child: Text('${value ~/ 1000}k', style: const TextStyle(fontSize: 12)),
+                            );
+                          }
+                          return Container();
+                        },
+                      ),
                     ),
                     topTitles: AxisTitles(
                       sideTitles: SideTitles(showTitles: false),
@@ -250,7 +277,17 @@ Widget build(BuildContext context) {
                   ),
                   gridData: FlGridData(show: false),
                   barTouchData: BarTouchData(
-                    enabled: false,
+                    enabled: true,
+                    touchCallback: (FlTouchEvent event, barTouchResponse) {
+                      if (event.isInterestedForInteractions &&
+                          barTouchResponse != null &&
+                          barTouchResponse.spot != null) {
+                        final tappedGroup = barTouchResponse.spot!.touchedBarGroup;
+                        final day = _getDayName(tappedGroup.x.toInt());
+                        final amount = tappedGroup.barRods[0].toY;
+                        _showDayData(day, amount);
+                      }
+                    },
                   ),
                 ),
               ),
@@ -262,55 +299,55 @@ Widget build(BuildContext context) {
   }
 
   Future<Map<String, double>> _fetchWeeklyData() async {
-  final startOfWeek = _currentWeek.subtract(Duration(days: _currentWeek.weekday - 1));
-  final endOfWeek = startOfWeek.add(const Duration(days: 6));
+    final startOfWeek = _currentWeek.subtract(Duration(days: _currentWeek.weekday - 1));
+    final endOfWeek = startOfWeek.add(const Duration(days: 6));
 
-  final querySnapshot = await FirebaseFirestore.instance
-      .collection('WaterHistory')
-      .doc(FirebaseAuth.instance.currentUser?.email)
-      .collection('2024')
-      .where('Data do registo', isGreaterThanOrEqualTo: DateFormat('yyyy/MM/dd').format(startOfWeek))
-      .where('Data do registo', isLessThanOrEqualTo: DateFormat('yyyy/MM/dd').format(endOfWeek))
-      .get();
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('WaterHistory')
+        .doc(FirebaseAuth.instance.currentUser?.email)
+        .collection('2024')
+        .where('Data do registo', isGreaterThanOrEqualTo: DateFormat('yyyy/MM/dd').format(startOfWeek))
+        .where('Data do registo', isLessThanOrEqualTo: DateFormat('yyyy/MM/dd').format(endOfWeek))
+        .get();
 
-  final data = {
-    'Mon': 0.0,
-    'Tue': 0.0,
-    'Wed': 0.0,
-    'Thu': 0.0,
-    'Fri': 0.0,
-    'Sat': 0.0,
-    'Sun': 0.0,
-  };
+    final data = {
+      'Mon': 0.0,
+      'Tue': 0.0,
+      'Wed': 0.0,
+      'Thu': 0.0,
+      'Fri': 0.0,
+      'Sat': 0.0,
+      'Sun': 0.0,
+    };
 
-  for (var doc in querySnapshot.docs) {
-    final dateString = doc['Data do registo'];
-    final date = DateFormat('yyyy/MM/dd').parse(dateString);
-    final day = DateFormat('EEE').format(date);
-    final quantityString = doc['Quantidade de água (mL)'];
-    final quantity = double.tryParse(quantityString) ?? 0.0;
+    for (var doc in querySnapshot.docs) {
+      final dateString = doc['Data do registo'];
+      final date = DateFormat('yyyy/MM/dd').parse(dateString);
+      final day = DateFormat('EEE').format(date);
+      final quantityString = doc['Quantidade de água (mL)'];
+      final quantity = double.tryParse(quantityString) ?? 0.0;
 
-    if (data.containsKey(day)) {
-      data[day] = data[day]! + quantity;
+      if (data.containsKey(day)) {
+        data[day] = data[day]! + quantity;
+      }
     }
+
+    return data;
   }
 
-  return data;
-}
-
   Future<List<DocumentSnapshot>> _fetchListData() async {
-  final startOfWeek = _currentWeek.subtract(Duration(days: _currentWeek.weekday - 1));
-  final endOfWeek = startOfWeek.add(const Duration(days: 6));
+    final startOfWeek = _currentWeek.subtract(Duration(days: _currentWeek.weekday - 1));
+    final endOfWeek = startOfWeek.add(const Duration(days: 6));
 
-  final querySnapshot = await FirebaseFirestore.instance
-      .collection('WaterHistory')
-      .doc(FirebaseAuth.instance.currentUser?.email)
-      .collection('2024')
-      .where('Data do registo', isGreaterThanOrEqualTo: DateFormat('yyyy/MM/dd').format(startOfWeek))
-      .where('Data do registo', isLessThanOrEqualTo: DateFormat('yyyy/MM/dd').format(endOfWeek))
-      .get();
-  return querySnapshot.docs;
-}
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('WaterHistory')
+        .doc(FirebaseAuth.instance.currentUser?.email)
+        .collection('2024')
+        .where('Data do registo', isGreaterThanOrEqualTo: DateFormat('yyyy/MM/dd').format(startOfWeek))
+        .where('Data do registo', isLessThanOrEqualTo: DateFormat('yyyy/MM/dd').format(endOfWeek))
+        .get();
+    return querySnapshot.docs;
+  }
 
   Widget _buildList(List<DocumentSnapshot> entries) {
     return ListView.builder(
@@ -367,6 +404,27 @@ Widget build(BuildContext context) {
         return 6;
       default:
         return 0;
+    }
+  }
+
+  String _getDayName(int index) {
+    switch (index) {
+      case 0:
+        return 'Monday';
+      case 1:
+        return 'Tuesday';
+      case 2:
+        return 'Wednesday';
+      case 3:
+        return 'Thursday';
+      case 4:
+        return 'Friday';
+      case 5:
+        return 'Saturday';
+      case 6:
+        return 'Sunday';
+      default:
+        return '';
     }
   }
 }
