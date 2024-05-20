@@ -1,4 +1,6 @@
-import 'package:waterup/components/pie_graph.dart';
+import 'package:waterup/components/circularmeter.dart';
+import 'package:waterup/components/motivationalmessages.dart';
+import 'package:waterup/components/tipofday.dart';
 import 'package:flutter/material.dart';
 import 'package:waterup/pages/start.dart';
 import 'package:waterup/backend/orçamentos.dart';
@@ -74,38 +76,21 @@ class GraphComponent extends State<Graph> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Center(
+                  Center(
                     child: Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: Text(
-                        'Tip of the Day:',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20.0,
-                        ),
-                      ),
+                      padding: const EdgeInsets.all(20.0),
+                      child: WaterIntakeTip(),
                     ),
                   ),
-                  const Center(
+                  WaterProgressBar(progress: percentages[0]),
+                  const SizedBox(height: 20),
+                  Center(
                     child: Padding(
-                      padding: EdgeInsets.all(20.0),
+                      padding: const EdgeInsets.all(20.0),
                       child: Text(
-                        ' "Drinking water is not only good for your health, it can also help you regulate the temperature of your body" ',
-                        style: TextStyle(
-                          fontSize: 18.0,
-                        ),
-                      ),
-                    ),
-                  ),
-                  PieGraph(percentages),
-                  const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: Text(
-                        'Daily Goal',
+                        'Daily Goal\n$water L / 2 L',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20.0,
                         ),
@@ -115,27 +100,7 @@ class GraphComponent extends State<Graph> {
                   Center(
                     child: Padding(
                       padding: const EdgeInsets.all(20.0),
-                      child: Text(
-                        '$water L / 2 L',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20.0,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: Text(
-                        'You’re almost at your daily goal! Keep it up!',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20.0,
-                        ),
-                      ),
+                      child: MotivationalMessage(percentages: percentages),
                     ),
                   ),
                 ],
